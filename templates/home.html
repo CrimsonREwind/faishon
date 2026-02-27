@@ -1,0 +1,740 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Upcycle - fAishon{% endblock %}
+
+{% block content %}
+<div class="w-full h-full flex flex-col items-center p-4 md:p-8 bg-base-200 rounded-box overflow-y-auto">
+
+    <!-- Header -->
+    <div class="text-center max-w-2xl mx-auto mb-8 mt-4">
+        <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-primary mb-3">
+            AI Upcycle Assistant</h1>
+        <p class="text-base-content/70">Upload a photo of an old garment, and our AI will generate creative, sustainable
+            ways to breathe new life into it.</p>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="w-full max-w-5xl mx-auto bg-base-100 rounded-box border border-base-300 shadow-xl p-6 md:p-10 min-h-[500px] relative overflow-hidden transition-all duration-500"
+        id="appContainer">
+
+        <!-- STAGE 1: UPLOAD ZONE -->
+        <div id="stageUpload"
+            class="absolute inset-0 p-6 md:p-10 flex flex-col items-center justify-center transition-opacity duration-300 opacity-100 z-10">
+
+            <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-center">
+
+                <!-- Box 1: Front -->
+                <div class="upload-box flex flex-col items-center justify-center p-8 border-2 border-dashed border-base-300 rounded-box hover:border-primary/50 transition-colors cursor-pointer group relative bg-base-100"
+                    data-type="front">
+                    <div
+                        class="icon-container w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <i data-lucide="shirt" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="font-bold text-base-content mb-1">Front View</h3>
+                    <p class="text-xs text-base-content/60 px-2 file-name">Click to upload front</p>
+                    <input type="file" id="fileFront" class="hidden file-input-target" accept="image/*" />
+                    <!-- Success indicator -->
+                    <div class="success-check absolute top-4 right-4 text-success opacity-0 transition-opacity">
+                        <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <!-- Box 2: Back -->
+                <div class="upload-box flex flex-col items-center justify-center p-8 border-2 border-dashed border-base-300 rounded-box hover:border-primary/50 transition-colors cursor-pointer group relative bg-base-100"
+                    data-type="back">
+                    <div
+                        class="icon-container w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="w-8 h-8 scale-x-[-1]">
+                            <path
+                                d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-base-content mb-1">Back View</h3>
+                    <p class="text-xs text-base-content/60 px-2 file-name">Click to upload back</p>
+                    <input type="file" id="fileBack" class="hidden file-input-target" accept="image/*" />
+                    <!-- Success indicator -->
+                    <div class="success-check absolute top-4 right-4 text-success opacity-0 transition-opacity">
+                        <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <!-- Box 3: Closeup -->
+                <div class="upload-box flex flex-col items-center justify-center p-8 border-2 border-dashed border-base-300 rounded-box hover:border-primary/50 transition-colors cursor-pointer group relative bg-base-100"
+                    data-type="closeup">
+                    <div
+                        class="icon-container w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                        <i data-lucide="zoom-in" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="font-bold text-base-content mb-1">Texture / Damage</h3>
+                    <p class="text-xs text-base-content/60 px-2 file-name">Close-up of fabric</p>
+                    <input type="file" id="fileCloseup" class="hidden file-input-target" accept="image/*" />
+                    <!-- Success indicator -->
+                    <div class="success-check absolute top-4 right-4 text-success opacity-0 transition-opacity">
+                        <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+            </div>
+
+            <button id="btnGenerate" class="btn btn-primary btn-lg px-12 shadow-lg shadow-primary/30" disabled>
+                Generate Ideas <i data-lucide="sparkles" class="w-5 h-5 ml-1"></i>
+            </button>
+
+            <!-- Sample inputs for quick testing -->
+            <div class="mt-8 text-center max-w-xl">
+                <p class="text-sm text-base-content/50 mb-3">Or try with a simulated set:</p>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <button class="badge badge-outline p-4 hover:bg-base-200 gap-2 cursor-pointer sample-btn">
+                        <i data-lucide="shirt" class="w-4 h-4 text-base-content/70"></i> Autofill Denim Jacket
+                    </button>
+                    <button class="badge badge-outline p-4 hover:bg-base-200 gap-2 cursor-pointer sample-btn">
+                        <i data-lucide="scan-line" class="w-4 h-4 text-base-content/70"></i> Autofill Torn T-Shirt
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- STAGE 2: LOADING SKELETON -->
+        <div id="stageLoading"
+            class="absolute inset-0 p-6 md:p-10 flex flex-col items-center justify-center transition-opacity duration-300 opacity-0 pointer-events-none z-0">
+            <div class="flex flex-col items-center text-center max-w-md w-full">
+                <!-- Animated Spinner relative to theme -->
+                <div class="relative w-24 h-24 mb-6">
+                    <div class="absolute inset-0 border-4 border-base-300 rounded-full"></div>
+                    <div
+                        class="absolute inset-0 border-4 border-primary rounded-full border-t-transparent animate-spin">
+                    </div>
+                    <div class="absolute inset-0 flex items-center justify-center text-primary">
+                        <i data-lucide="sparkles" class="w-8 h-8 animate-pulse"></i>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-base-content mb-2" id="loadingTitle">Analyzing Fabric...</h3>
+                <p class="text-base-content/60 text-sm h-5" id="loadingSubtitle">Identifying material composition and
+                    structural patterns.</p>
+
+                <div class="w-full bg-base-200 rounded-full h-2.5 mt-8 overflow-hidden">
+                    <div class="bg-primary h-2.5 rounded-full transition-all duration-200 ease-out" id="progressBar"
+                        style="width: 5%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STAGE 3: RESULTS -->
+        <div id="stageResults"
+            class="absolute inset-0 p-6 md:p-10 flex flex-col transition-opacity duration-300 opacity-0 pointer-events-none z-0 overflow-y-auto hidden-scrollbar">
+
+            <div class="flex justify-between items-end mb-6 pb-4 border-b border-base-200">
+                <div>
+                    <h2 class="text-2xl font-bold text-base-content">Upcycle Concepts</h2>
+                    <p class="text-base-content/60 text-sm">Here are 3 sustainable ways to reuse your garment.</p>
+                </div>
+                <button class="btn btn-outline btn-sm gap-2" id="btnStartOver">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> Start Over
+                </button>
+            </div>
+
+            <!-- Garment Analysis Header (Populated by JS) -->
+            <div id="garmentAnalysisBox" class="bg-base-200/50 rounded-xl border border-base-200 p-6 mb-8 hidden">
+                <h3
+                    class="text-sm font-bold uppercase tracking-widest text-base-content/60 mb-4 flex items-center gap-2">
+                    <i data-lucide="scan-line" class="w-4 h-4"></i> Garment Analysis
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="garmentStatsGrid">
+                    <!-- Stats go here -->
+                </div>
+            </div>
+
+            <!-- Grid of concept cards (Dynamically populated by JS) -->
+            <div id="conceptsGrid" class="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-6">
+                <!-- AI Results go here -->
+            </div>
+        </div>
+
+        <!-- STAGE 4: INSTRUCTIONS (PHASE 2) -->
+        <div id="stageInstructions"
+            class="absolute inset-0 p-6 md:p-10 flex flex-col transition-opacity duration-300 opacity-0 pointer-events-none z-0 overflow-y-auto hidden-scrollbar">
+
+            <button class="btn btn-ghost btn-sm gap-2 self-start mb-6 text-base-content/70 hover:text-primary"
+                id="btnBackToConcepts">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Concepts
+            </button>
+
+            <!-- Loading State for Instructions -->
+            <div id="instructionLoading" class="flex flex-col items-center justify-center flex-1 py-12">
+                <span class="loading loading-ring loading-lg text-primary mb-4"></span>
+                <h3 class="text-lg font-bold">Drafting your tutorial...</h3>
+                <p class="text-base-content/60 text-sm max-w-sm text-center">Our AI tailor is writing step-by-step
+                    instructions and calculating the required materials.</p>
+            </div>
+
+            <!-- Actual Instructions Content -->
+            <div id="instructionContent" class="hidden flex-col">
+                <div class="flex items-start justify-between gap-4 mb-8 pb-6 border-b border-base-200">
+                    <div>
+                        <div class="badge badge-primary badge-sm font-bold tracking-wide uppercase mb-3"
+                            id="instDifficulty">Medium</div>
+                        <h2 class="text-3xl font-bold text-base-content mb-2" id="instTitle">Concept Title</h2>
+                        <p class="text-base-content/70" id="instDesc">Concept Description goes here.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Sidebar: Materials & Time -->
+                    <div class="md:col-span-1 flex flex-col gap-6">
+                        <div class="bg-primary/5 rounded-xl border border-primary/20 p-5">
+                            <h4 class="font-bold text-primary flex items-center gap-2 mb-3">
+                                <i data-lucide="clock" class="w-4 h-4"></i> Estimated Time
+                            </h4>
+                            <p class="text-2xl font-light" id="instTime">120 <span
+                                    class="text-sm text-base-content/60">mins</span></p>
+                        </div>
+
+                        <div class="bg-base-200/50 rounded-xl border border-base-200 p-5">
+                            <h4
+                                class="font-bold flex items-center gap-2 mb-4 text-sm uppercase tracking-wider text-base-content/80">
+                                <i data-lucide="package" class="w-4 h-4"></i> Tools Needed
+                            </h4>
+                            <ul class="space-y-2 text-sm text-base-content/80 font-medium" id="instToolsList">
+                                <!-- Tools populated here -->
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Main Content: Steps -->
+                    <div class="md:col-span-2">
+                        <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                            <i data-lucide="list-ordered" class="w-5 h-5 text-primary"></i> Step-by-Step Guide
+                        </h3>
+
+                        <!-- Pro Tip Alert -->
+                        <div id="instProTipBox" class="alert alert-accent shadow-sm mb-8 hidden flex items-start gap-4">
+                            <i data-lucide="lightbulb" class="w-5 h-5 shrink-0"></i>
+                            <div>
+                                <h3 class="font-bold text-sm">Tailor's Pro Tip</h3>
+                                <div class="text-xs opacity-80" id="instProTip">Tip contents...</div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6" id="instStepsList">
+                            <!-- Steps populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_head %}
+<!-- Simulation styling and logic -->
+<style>
+    .hidden-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .hidden-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const fileFront = document.getElementById('fileFront');
+        const fileBack = document.getElementById('fileBack');
+        const fileCloseup = document.getElementById('fileCloseup');
+        const uploadBoxes = document.querySelectorAll('.upload-box');
+        const btnGenerate = document.getElementById('btnGenerate');
+        const sampleBtns = document.querySelectorAll('.sample-btn');
+        const btnStartOver = document.getElementById('btnStartOver');
+
+        const stageUpload = document.getElementById('stageUpload');
+        const stageLoading = document.getElementById('stageLoading');
+        const stageResults = document.getElementById('stageResults');
+        const stageInstructions = document.getElementById('stageInstructions');
+
+        const loadingTitle = document.getElementById('loadingTitle');
+        const loadingSubtitle = document.getElementById('loadingSubtitle');
+        const progressBar = document.getElementById('progressBar');
+
+        const btnBackToConcepts = document.getElementById('btnBackToConcepts');
+
+        // Globals for Phase 2
+        let currentGarmentInfo = {};
+
+        const loadingTexts = [
+            { t: "Analyzing Fabric...", s: "Extracting fiber type, condition, and base colors." },
+            { t: "Detecting Wear...", s: "Finding seams, tears, and usable surface area." },
+            { t: "Brainstorming Ideas...", s: "Matching patterns with sustainable design database." },
+            { t: "Drafting Concepts...", s: "Compiling best fitting upcycle paths." }
+        ];
+
+        // --- Event Listeners for Upload Initiation ---
+
+        function checkAllFiles() {
+            if (fileFront.files.length > 0 && fileBack.files.length > 0 && fileCloseup.files.length > 0) {
+                btnGenerate.disabled = false;
+                // Added a gentle scale effect instead of an aggressive bounce
+                btnGenerate.classList.add('scale-105');
+                setTimeout(() => btnGenerate.classList.remove('scale-105'), 300);
+            } else {
+                btnGenerate.disabled = true;
+                btnGenerate.classList.remove('scale-105');
+            }
+        }
+
+        function handleFileUpload(boxElement, fileInput) {
+            if (fileInput.files.length > 0) {
+                const fileName = fileInput.files[0].name;
+                boxElement.classList.add('border-primary', 'bg-primary/5');
+                boxElement.querySelector('.file-name').textContent = fileName;
+                boxElement.querySelector('.success-check').classList.remove('opacity-0');
+                boxElement.querySelector('.icon-container').classList.add('bg-success/20', 'text-success');
+                boxElement.querySelector('.icon-container').classList.remove('bg-primary/10', 'text-primary');
+            }
+            checkAllFiles();
+        }
+
+        // Attach listeners to each box
+        uploadBoxes.forEach(box => {
+            const input = box.querySelector('.file-input-target');
+
+            // Click to upload
+            box.addEventListener('click', () => {
+                input.click();
+            });
+
+            // File selected
+            input.addEventListener('change', () => {
+                handleFileUpload(box, input);
+            });
+
+            // Drag and drop
+            box.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                box.classList.add('border-primary', 'bg-base-200/50');
+            });
+            box.addEventListener('dragleave', () => {
+                if (input.files.length === 0) {
+                    box.classList.remove('border-primary', 'bg-base-200/50');
+                }
+            });
+            box.addEventListener('drop', (e) => {
+                e.preventDefault();
+                box.classList.remove('border-primary', 'bg-base-200/50');
+                if (e.dataTransfer.files.length > 0) {
+                    input.files = e.dataTransfer.files;
+                    handleFileUpload(box, input);
+                }
+            });
+        });
+
+        // Generate Button
+        btnGenerate.addEventListener('click', () => {
+            if (!btnGenerate.disabled) {
+                startSimulation(false);
+            }
+        });
+
+        // Sample buttons (simulate filling all 3)
+        sampleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Fake filling the boxes visually
+                uploadBoxes.forEach(box => {
+                    box.classList.add('border-primary', 'bg-primary/5');
+                    box.querySelector('.file-name').textContent = "sample_image.jpg";
+                    box.querySelector('.success-check').classList.remove('opacity-0');
+                    box.querySelector('.icon-container').classList.add('bg-success/20', 'text-success');
+                    box.querySelector('.icon-container').classList.remove('bg-primary/10', 'text-primary');
+                });
+
+                // Immediately start simulation for the "quick test" experience
+                startSimulation(true);
+            });
+        });
+
+        // Start Over
+        btnStartOver.addEventListener('click', () => {
+            resetToUpload();
+        });
+
+        // Back to Concepts
+        btnBackToConcepts.addEventListener('click', () => {
+            switchStage(stageInstructions, stageResults);
+        });
+
+
+        // --- Simulation Logic ---
+
+        function switchStage(hideEl, showEl) {
+            hideEl.classList.remove('opacity-100', 'z-10');
+            hideEl.classList.add('opacity-0', 'pointer-events-none', 'z-0');
+
+            setTimeout(() => {
+                showEl.classList.remove('opacity-0', 'pointer-events-none', 'z-0');
+                showEl.classList.add('opacity-100', 'z-10');
+                // special check for scrollable results
+                if (showEl.id === 'stageResults') {
+                    showEl.style.overflowY = 'auto';
+                }
+            }, 300); // Wait for transition
+        }
+
+        async function startSimulation(isSample = false) {
+            // Reset Progress bar
+            progressBar.style.width = '5%';
+            loadingTitle.textContent = loadingTexts[0].t;
+            loadingSubtitle.textContent = loadingTexts[0].s;
+
+            // Switch to loading
+            switchStage(stageUpload, stageLoading);
+
+            // Simulate progress steps purely for visual UX while the real API call happens
+            let currentStep = 0;
+            const stepDuration = 1000; // ms per step
+
+            const progressInterval = setInterval(() => {
+                currentStep++;
+                if (currentStep < loadingTexts.length) {
+                    loadingTitle.textContent = loadingTexts[currentStep].t;
+                    loadingSubtitle.textContent = loadingTexts[currentStep].s;
+                    progressBar.style.width = `${(currentStep * 20) + 5}%`;
+                }
+            }, stepDuration);
+
+            try {
+                let data = null;
+
+                if (isSample) {
+                    // Bypass Nvidia API to save credits on sample clicks
+                    await new Promise(r => setTimeout(r, 4000)); // fake delay
+                    data = {
+                        "garment_type": "Button-up Shirt",
+                        "subcategory": "Flannel",
+                        "primary_color": "Red/Black Plaid",
+                        "secondary_colors": ["White"],
+                        "fabric_type": "100% Cotton flannel",
+                        "pattern": "Tartan Plaid",
+                        "fit": "Oversized",
+                        "sleeve_length": "Long",
+                        "estimated_reusability_score": 92,
+                        "concepts": [
+                            { title: "Patchwork Tote Bag", difficulty: "Easy", description: "Turn the sturdy body panels into an everyday reusable tote." },
+                            { title: "Cropped Layering Vest", difficulty: "Medium", description: "Cut off sleeves and hem, distress the edges for a modern vintage look." },
+                            { title: "Bucket Hat", difficulty: "Hard", description: "Re-pattern the fabric into a stylish, structured bucket hat for summer." }
+                        ]
+                    };
+                } else {
+                    // Build the form data for the real Nvidia API request
+                    const formData = new FormData();
+                    if (fileFront.files.length > 0) formData.append('front', fileFront.files[0]);
+                    if (fileBack.files.length > 0) formData.append('back', fileBack.files[0]);
+                    if (fileCloseup.files.length > 0) formData.append('closeup', fileCloseup.files[0]);
+
+                    let csrfToken = null;
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.startsWith('csrftoken=')) {
+                            csrfToken = cookie.substring('csrftoken='.length, cookie.length);
+                            break;
+                        }
+                    }
+
+                    // Call the django backend API
+                    const response = await fetch("{% url 'generate_ideas' %}", {
+                        method: 'POST',
+                        headers: { 'X-CSRFToken': csrfToken },
+                        body: formData
+                    });
+
+                    data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || "Failed to generate ideas");
+                    }
+                }
+
+                clearInterval(progressInterval);
+                progressBar.style.width = '100%';
+
+                // Store garment info for Phase 2
+                currentGarmentInfo = {
+                    garment_type: data.garment_type,
+                    fabric_type: data.fabric_type,
+                    primary_color: data.primary_color,
+                    pattern: data.pattern,
+                    fit: data.fit,
+                    estimated_reusability_score: data.estimated_reusability_score
+                };
+
+                // Render Results
+                renderGarmentAnalysis(currentGarmentInfo);
+                renderConcepts(data.concepts);
+
+                setTimeout(() => {
+                    switchStage(stageLoading, stageResults);
+                }, 500);
+
+            } catch (error) {
+                clearInterval(progressInterval);
+                loadingTitle.textContent = "Oops!";
+                loadingSubtitle.textContent = error.message;
+                progressBar.classList.replace('bg-primary', 'bg-error');
+                console.error(error);
+
+                // Show a quick way to restart after an error
+                setTimeout(() => {
+                    progressBar.classList.replace('bg-error', 'bg-primary');
+                    resetToUpload();
+                }, 4000);
+            }
+        }
+
+        function renderGarmentAnalysis(info) {
+            const box = document.getElementById('garmentAnalysisBox');
+            const grid = document.getElementById('garmentStatsGrid');
+
+            if (!info.garment_type) return; // safety check
+
+            box.classList.remove('hidden');
+
+            // Score color logic
+            let scoreColor = "text-success";
+            if (info.estimated_reusability_score < 70) scoreColor = "text-warning";
+            if (info.estimated_reusability_score < 40) scoreColor = "text-error";
+
+            grid.innerHTML = `
+                <div class="flex flex-col gap-1">
+                    <span class="text-[10px] uppercase font-bold text-base-content/50">Garment Type</span>
+                    <span class="text-sm font-semibold">${info.garment_type || 'Unknown'}</span>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <span class="text-[10px] uppercase font-bold text-base-content/50">Fabric Makeup</span>
+                    <span class="text-sm font-semibold">${info.fabric_type || 'Unknown'}</span>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <span class="text-[10px] uppercase font-bold text-base-content/50">Primary Pattern</span>
+                    <span class="text-sm font-semibold">${info.pattern || 'Solid'}</span>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <span class="text-[10px] uppercase font-bold text-base-content/50">Reusability Score</span>
+                    <span class="text-lg font-black ${scoreColor}">${info.estimated_reusability_score || 0}%</span>
+                </div>
+            `;
+        }
+
+        function renderConcepts(concepts) {
+            const grid = document.getElementById('conceptsGrid');
+            grid.innerHTML = ""; // clear previous
+
+            const icons = ['shopping-bag', 'scissors', 'shirt', 'zap', 'star'];
+
+            concepts.forEach((concept, index) => {
+                // Badge color based on difficulty
+                let badgeClass = "badge-success";
+                if (concept.difficulty.toLowerCase() === 'medium') badgeClass = "badge-warning";
+                if (concept.difficulty.toLowerCase() === 'hard') badgeClass = "badge-error text-white";
+
+                const icon = icons[index % icons.length];
+
+                // We stringify the concept to pass it to the onClick handler for Phase 2
+                const safeConceptStr = encodeURIComponent(JSON.stringify(concept));
+
+                const cardHtml = `
+                <div class="card bg-base-100 border border-base-200 shadow-sm hover:shadow-lg transition-all duration-300">
+                    <figure class="px-6 pt-6 pb-2">
+                        <div class="w-full aspect-[4/3] bg-base-200/50 rounded-box border border-base-200 flex items-center justify-center text-base-content/40 hover:bg-base-200 hover:text-primary transition-colors cursor-pointer group">
+                            <div class="flex flex-col items-center gap-3 transform group-hover:scale-105 transition-transform">
+                                <i data-lucide="${icon}" class="w-10 h-10"></i>
+                                <span class="text-[10px] font-bold tracking-widest uppercase">Click for preview</span>
+                            </div>
+                        </div>
+                    </figure>
+                    <div class="card-body p-6 flex flex-col h-full">
+                        <div class="flex flex-col gap-1 mb-3">
+                            <div class="flex justify-between items-start gap-2">
+                                <h2 class="card-title text-xl font-bold leading-tight text-base-content">${concept.title}</h2>
+                            </div>
+                            <div class="w-fit badge ${badgeClass} badge-outline badge-sm font-semibold tracking-wide uppercase">${concept.difficulty}</div>
+                        </div>
+                        
+                        <p class="text-sm text-base-content/70 line-clamp-3 mb-6 leading-relaxed">${concept.description}</p>
+                        
+                        <div class="card-actions justify-end mt-auto gap-3 border-t border-base-200 pt-5">
+                            <button onclick="generateInstructions('${safeConceptStr}')" class="btn btn-primary flex-1">Choose This Idea</button>
+                        </div>
+                    </div>
+                </div>
+                `;
+
+                grid.insertAdjacentHTML('beforeend', cardHtml);
+            });
+
+            // Re-initialize lucide icons for the newly injected HTML
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+
+        // --- Phase 2: Detailed Instructions Generation ---
+
+        window.generateInstructions = async function (encodedConcept) {
+            const concept = JSON.parse(decodeURIComponent(encodedConcept));
+
+            // UI Prep
+            document.getElementById('instructionLoading').classList.remove('hidden');
+            document.getElementById('instructionContent').classList.add('hidden');
+            switchStage(stageResults, stageInstructions);
+
+            try {
+                // If it's a sample run, we can also bypass the instructions API slightly to save credits, 
+                // but let's assume we want to call it for real, or simulate it gracefully.
+                // For this implementation, we'll actually call the backend always for phase 2 
+                // unless we want to strictly mock it. We will strictly mock it if it's the specific sample title.
+
+                let data = null;
+
+                if (concept.title === "Patchwork Tote Bag" || concept.title === "Cropped Layering Vest" || concept.title === "Bucket Hat") {
+                    // Fast mock for sample buttons
+                    await new Promise(r => setTimeout(r, 2000));
+                    data = {
+                        tools_needed: ["Fabric scissors", "Pins", "Sewing machine", "Heavy thread"],
+                        estimated_time_minutes: 90,
+                        pro_tip: "Iron your fabric completely flat before cutting.",
+                        instructions: [
+                            "Lay the garment flat on a clean table and smooth out any wrinkles.",
+                            "Using chalk, draw your primary cutting lines as drafted.",
+                            "Carefully slice along the lines, keeping tension taught.",
+                            "Pin the new edges together inside-out.",
+                            "Sew a straight stitch with a 1/2 inch seam allowance.",
+                            "Turn right-side out and press with an iron."
+                        ]
+                    };
+                } else {
+                    // Real API Call
+                    let csrfToken = null;
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.startsWith('csrftoken=')) {
+                            csrfToken = cookie.substring('csrftoken='.length, cookie.length);
+                            break;
+                        }
+                    }
+
+                    const response = await fetch("{% url 'generate_instructions' %}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrfToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            title: concept.title,
+                            description: concept.description,
+                            garment_info: currentGarmentInfo
+                        })
+                    });
+
+                    data = await response.json();
+                    if (!response.ok) throw new Error(data.error || "Failed to draft instructions.");
+                }
+
+                // Populate UI
+                document.getElementById('instTitle').textContent = concept.title;
+                document.getElementById('instDesc').textContent = concept.description;
+                document.getElementById('instTime').innerHTML = `${data.estimated_time_minutes || 60} <span class="text-sm text-base-content/60">mins</span>`;
+
+                let badgeClass = "badge-success";
+                if (concept.difficulty.toLowerCase() === 'medium') badgeClass = "badge-warning";
+                if (concept.difficulty.toLowerCase() === 'hard') badgeClass = "badge-error text-white";
+                const diffBadge = document.getElementById('instDifficulty');
+                diffBadge.className = `badge ${badgeClass} badge-sm font-bold tracking-wide uppercase mb-3`;
+                diffBadge.textContent = concept.difficulty;
+
+                // Tools List
+                const toolsList = document.getElementById('instToolsList');
+                toolsList.innerHTML = "";
+                if (data.tools_needed && data.tools_needed.length > 0) {
+                    data.tools_needed.forEach(tool => {
+                        toolsList.innerHTML += `<li class="flex items-start gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i> ${tool}</li>`;
+                    });
+                } else {
+                    toolsList.innerHTML = `<li class="text-base-content/50 italic">Standard sewing kit.</li>`;
+                }
+
+                // Pro Tip
+                const tipBox = document.getElementById('instProTipBox');
+                if (data.pro_tip) {
+                    tipBox.classList.remove('hidden');
+                    document.getElementById('instProTip').textContent = data.pro_tip;
+                } else {
+                    tipBox.classList.add('hidden');
+                }
+
+                // Instructions List
+                const stepsList = document.getElementById('instStepsList');
+                stepsList.innerHTML = "";
+                if (data.instructions && data.instructions.length > 0) {
+                    data.instructions.forEach((step, idx) => {
+                        stepsList.innerHTML += `
+                        <div class="flex gap-4 group">
+                            <div class="flex flex-col items-center">
+                                <div class="w-8 h-8 rounded-full bg-base-200 border border-base-300 flex items-center justify-center font-bold text-sm text-base-content/60 group-hover:bg-primary group-hover:text-primary-content group-hover:border-primary transition-colors shrink-0">
+                                    ${idx + 1}
+                                </div>
+                                ${idx !== data.instructions.length - 1 ? '<div class="w-0.5 h-full bg-base-200 mt-2 mb-2"></div>' : ''}
+                            </div>
+                            <div class="pt-1 pb-6 w-full">
+                                <p class="text-base-content leading-relaxed font-medium">${step}</p>
+                            </div>
+                        </div>
+                        `;
+                    });
+                }
+
+                if (window.lucide) window.lucide.createIcons();
+
+                // Reveal Content
+                document.getElementById('instructionLoading').classList.add('hidden');
+                document.getElementById('instructionContent').classList.remove('hidden');
+                document.getElementById('instructionContent').classList.add('flex');
+
+            } catch (error) {
+                console.error(error);
+                alert("Sorry, there was an issue generating the tutorial. Try again.");
+                switchStage(stageInstructions, stageResults);
+            }
+        };
+
+        function resetToUpload() {
+            // Clear inputs and UI state
+            fileFront.value = '';
+            fileBack.value = '';
+            fileCloseup.value = '';
+
+            uploadBoxes.forEach(box => {
+                box.classList.remove('border-primary', 'bg-primary/5', 'bg-base-200/50');
+                box.querySelector('.file-name').textContent = box.dataset.type === 'front' ? "Click to upload front" :
+                    box.dataset.type === 'back' ? "Click to upload back" : "Close-up of fabric";
+                box.querySelector('.success-check').classList.add('opacity-0');
+                box.querySelector('.icon-container').classList.remove('bg-success/20', 'text-success');
+                box.querySelector('.icon-container').classList.add('bg-primary/10', 'text-primary');
+            });
+
+            btnGenerate.disabled = true;
+
+            loadingTitle.textContent = loadingTexts[0].t;
+            loadingSubtitle.textContent = loadingTexts[0].s;
+            progressBar.style.width = '5%';
+            switchStage(stageResults, stageUpload);
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends 'auth_base.html' %}
+
+{% block title %}Log in - fAishon{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-4xl">
+    <div class="floating-box bg-base-100 shadow-2xl border border-base-300 w-full overflow-hidden">
+        <div class="flex flex-col md:flex-row">
+
+            <!-- Left Side: Info Panel -->
+            <div
+                class="bg-primary/5 border-b md:border-b-0 md:border-r border-base-300 p-10 md:w-5/12 flex flex-col justify-center">
+                <h2 class="text-2xl font-bold text-base-content mb-3">Welcome back to
+                    <span class="text-base-content">f<span class="text-primary">Ai</span>shon</span>
+                </h2>
+                <p class="text-base-content/60 text-sm leading-relaxed mb-8">
+                    Log in to continue upcycling your wardrobe and connecting with the community.
+                </p>
+
+                <!-- Quick feature reminders -->
+                <div class="flex flex-col gap-4">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-9 h-9 bg-primary/10 text-primary rounded-box flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        </div>
+                        <span class="text-sm text-base-content/70">AI-powered upcycle suggestions</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-9 h-9 bg-primary/10 text-primary rounded-box flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="users" class="w-4 h-4"></i>
+                        </div>
+                        <span class="text-sm text-base-content/70">Community marketplace</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-9 h-9 bg-primary/10 text-primary rounded-box flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="leaf" class="w-4 h-4"></i>
+                        </div>
+                        <span class="text-sm text-base-content/70">Track your sustainability impact</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Login Form -->
+            <div class="p-10 md:w-7/12 flex flex-col justify-center">
+                <h1 class="text-2xl font-bold text-base-content mb-1">Log In</h1>
+                <p class="text-base-content/50 text-sm mb-8">Enter your credentials to access your account.</p>
+
+                <form method="POST" action="{% url 'login' %}" class="space-y-5">
+                    {% csrf_token %}
+
+                    <!-- Show error messages if any -->
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-error text-sm rounded-box">
+                        <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+
+                    <div class="form-control w-full">
+                        <label class="label"><span class="label-text font-medium text-base-content/80">Email
+                                Address</span></label>
+                        <input type="email" name="email" placeholder="you@example.com"
+                            class="input input-bordered w-full rounded-box" required />
+                    </div>
+
+                    <div class="form-control w-full">
+                        <label class="label">
+                            <span class="label-text font-medium text-base-content/80">Password</span>
+                            <a href="#" class="label-text-alt text-primary hover:underline font-medium">Forgot?</a>
+                        </label>
+                        <input type="password" name="password" placeholder="Enter your password"
+                            class="input input-bordered w-full rounded-box" required />
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label cursor-pointer justify-start gap-3 p-0">
+                            <input type="checkbox" checked="checked"
+                                class="checkbox checkbox-primary checkbox-sm border-base-300" />
+                            <span class="label-text text-sm text-base-content/70">Remember me</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-full text-base mt-2 h-12">
+                        Log In
+                    </button>
+                </form>
+
+                <p class="text-center mt-8 text-sm text-base-content/60">
+                    Don't have an account?
+                    <a href="{% url 'signup' %}" class="text-primary hover:underline font-bold">Sign up</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

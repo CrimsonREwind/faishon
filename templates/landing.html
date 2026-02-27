@@ -1,0 +1,134 @@
+{% extends 'auth_base.html' %}
+
+{% block title %}fAishon - Sustainable Fashion{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="flex flex-col items-center text-center w-full mt-8 lg:mt-16 mb-16">
+    <h1 class="text-5xl lg:text-6xl font-bold leading-tight max-w-3xl">
+        Give your old clothes a <span class="text-primary">new life.</span>
+    </h1>
+
+    <p class="text-lg text-base-content/70 leading-relaxed max-w-2xl mt-6">
+        Upload photos of clothing you no longer wear, and get creative upcycling ideas
+        powered by AI. Connect with tailors or swap with the community.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-4 mt-8">
+        <a href="{% url 'signup' %}" class="btn btn-primary btn-lg px-10 gap-2">
+            Get Started <i data-lucide="arrow-right" class="w-5 h-5"></i>
+        </a>
+        <a href="{% url 'login' %}" class="btn btn-outline btn-lg px-8 border-base-300">
+            I have an account
+        </a>
+    </div>
+</div>
+
+<!-- How it Works Section -->
+<div class="w-full max-w-5xl mx-auto mb-16">
+    <h2 class="text-2xl font-bold text-center mb-10 text-base-content">How it works</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Step 1 -->
+        <div class="floating-box bg-base-100 border border-base-300 p-8 flex flex-col items-center text-center gap-4">
+            <div class="w-14 h-14 bg-primary/10 text-primary rounded-box flex items-center justify-center">
+                <i data-lucide="camera" class="w-7 h-7"></i>
+            </div>
+            <h3 class="text-lg font-bold text-base-content">Upload</h3>
+            <p class="text-sm text-base-content/60 leading-relaxed">
+                Take a photo of the clothes you want to upcycle and upload it to the platform.
+            </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="floating-box bg-base-100 border border-base-300 p-8 flex flex-col items-center text-center gap-4">
+            <div class="w-14 h-14 bg-primary/10 text-primary rounded-box flex items-center justify-center">
+                <i data-lucide="sparkles" class="w-7 h-7"></i>
+            </div>
+            <h3 class="text-lg font-bold text-base-content">Get Ideas</h3>
+            <p class="text-sm text-base-content/60 leading-relaxed">
+                Our AI analyzes the garment and suggests creative ways to transform it into something new.
+            </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="floating-box bg-base-100 border border-base-300 p-8 flex flex-col items-center text-center gap-4">
+            <div class="w-14 h-14 bg-primary/10 text-primary rounded-box flex items-center justify-center">
+                <i data-lucide="heart-handshake" class="w-7 h-7"></i>
+            </div>
+            <h3 class="text-lg font-bold text-base-content">Connect</h3>
+            <p class="text-sm text-base-content/60 leading-relaxed">
+                Find local tailors to bring ideas to life, or swap your clothes with the community.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="w-full max-w-5xl mx-auto mb-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Feature 1 -->
+        <div class="floating-box bg-base-100 border border-base-300 p-8 flex items-start gap-5">
+            <div
+                class="w-12 h-12 bg-primary/10 text-primary rounded-box flex items-center justify-center flex-shrink-0 mt-1">
+                <i data-lucide="recycle" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-base-content mb-2">Reduce Textile Waste</h3>
+                <p class="text-sm text-base-content/60 leading-relaxed">
+                    Instead of throwing away old clothes, find practical ways to reuse and redesign them.
+                </p>
+            </div>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="floating-box bg-base-100 border border-base-300 p-8 flex items-start gap-5">
+            <div
+                class="w-12 h-12 bg-primary/10 text-primary rounded-box flex items-center justify-center flex-shrink-0 mt-1">
+                <i data-lucide="users" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-base-content mb-2">Community Marketplace</h3>
+                <p class="text-sm text-base-content/60 leading-relaxed">
+                    Buy, sell, or swap upcycled clothing with other users who care about sustainability.
+                </p>
+            </div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="floating-box bg-base-100 border border-base-300 p-8 flex items-start gap-5">
+            <div
+                class="w-12 h-12 bg-primary/10 text-primary rounded-box flex items-center justify-center flex-shrink-0 mt-1">
+                <i data-lucide="map-pin" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-base-content mb-2">Find Local Tailors</h3>
+                <p class="text-sm text-base-content/60 leading-relaxed">
+                    Connect with tailors near you who can help bring your upcycled designs to reality.
+                </p>
+            </div>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="floating-box bg-base-100 border border-base-300 p-8 flex items-start gap-5">
+            <div
+                class="w-12 h-12 bg-primary/10 text-primary rounded-box flex items-center justify-center flex-shrink-0 mt-1">
+                <i data-lucide="leaf" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-base-content mb-2">Track Your Impact</h3>
+                <p class="text-sm text-base-content/60 leading-relaxed">
+                    See how much waste you have prevented by upcycling instead of discarding your clothes.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer CTA -->
+<div class="w-full max-w-3xl mx-auto text-center mb-12 py-10 border-t border-base-300">
+    <h2 class="text-2xl font-bold text-base-content mb-3">Ready to start upcycling?</h2>
+    <p class="text-base-content/60 mb-6">Create a free account and start giving your wardrobe a second chance.</p>
+    <a href="{% url 'signup' %}" class="btn btn-primary px-10">Create Account</a>
+</div>
+{% endblock %}

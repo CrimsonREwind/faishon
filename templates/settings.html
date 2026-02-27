@@ -1,0 +1,518 @@
+{% extends 'base.html' %}
+
+{% block title %}Account Settings - fAishon{% endblock %}
+
+{% block content %}
+<div class="w-full h-full flex flex-col items-center p-4 md:p-8 bg-base-200 rounded-box overflow-y-auto">
+
+    <!-- Header -->
+    <div class="text-center max-w-2xl mx-auto mb-8 mt-4">
+        <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-primary mb-3">Account Settings</h1>
+        <p class="text-base-content/70">Manage your profile details, track your upcycled orders, and update your
+            shipping addresses.</p>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div
+        class="w-full max-w-5xl mx-auto bg-base-100 rounded-box border border-base-300 shadow-xl flex flex-col md:flex-row min-h-[600px] overflow-hidden">
+
+        <!-- Sidebar Navigation -->
+        <div
+            class="w-full md:w-72 bg-base-200/30 border-b md:border-b-0 md:border-r border-base-200 p-6 flex flex-col gap-2">
+
+            <a href="#" id="tab-profile" onclick="switchTab('profile')"
+                class="settings-tab flex items-center gap-4 group p-3 rounded-xl bg-base-200 transition-all">
+                <div
+                    class="icon-container w-10 h-10 rounded-lg bg-primary text-primary-content shadow-sm flex items-center justify-center transition-transform group-hover:scale-105">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                </div>
+                <span class="tab-text text-base text-base-content font-bold">Profile</span>
+            </a>
+
+            <a href="#" id="tab-orders" onclick="switchTab('orders')"
+                class="settings-tab flex items-center gap-4 group p-3 rounded-xl hover:bg-base-200/50 transition-all">
+                <div
+                    class="icon-container w-10 h-10 rounded-lg bg-base-100 border border-base-300 text-base-content/70 shadow-sm flex items-center justify-center transition-transform group-hover:scale-105">
+                    <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                </div>
+                <span
+                    class="tab-text text-base text-base-content/70 font-medium group-hover:text-base-content transition-colors">Orders</span>
+            </a>
+
+            <a href="#" id="tab-address" onclick="switchTab('address')"
+                class="settings-tab flex items-center gap-4 group p-3 rounded-xl hover:bg-base-200/50 transition-all">
+                <div
+                    class="icon-container w-10 h-10 rounded-lg bg-base-100 border border-base-300 text-base-content/70 shadow-sm flex items-center justify-center transition-transform group-hover:scale-105">
+                    <i data-lucide="map-pin" class="w-5 h-5"></i>
+                </div>
+                <span
+                    class="tab-text text-base text-base-content/70 font-medium group-hover:text-base-content transition-colors">Address</span>
+            </a>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 p-6 md:p-10 overflow-y-auto hidden-scrollbar">
+
+
+
+            <!-- PROFILE PANEL -->
+            <div id="panel-profile"
+                class="settings-panel max-w-2xl mx-auto w-full transition-opacity duration-300 opacity-100">
+                <h3 class="text-2xl font-bold text-base-content mb-2 border-b border-base-200 pb-4">Profile Details</h3>
+                <p class="text-base-content/60 text-sm mb-8 mt-2">Update your personal information and contact details.
+                </p>
+
+                <form method="POST" action="{% url 'settings' %}" enctype="multipart/form-data" class="space-y-8">
+                    {% csrf_token %}
+
+
+
+                    <!-- Avatar Upload Section -->
+                    <div class="flex items-center gap-6 pb-8 border-b border-base-200">
+                        {% if profile.profile_picture %}
+                        <div class="w-20 h-20 rounded-full shadow-sm border border-base-300 overflow-hidden shrink-0">
+                            <img src="{{ profile.profile_picture.url }}" alt="Profile"
+                                class="w-full h-full object-cover">
+                        </div>
+                        {% else %}
+                        <div
+                            class="w-20 h-20 rounded-full bg-primary/10 text-primary flex items-center justify-center text-3xl font-bold shadow-sm border border-primary/20 uppercase shrink-0">
+                            {{ user.first_name.0|default:'A' }}{{ user.last_name.0|default:'' }}
+                        </div>
+                        {% endif %}
+                        <div class="flex flex-col gap-2">
+                            <h4 class="font-semibold text-base-content text-sm">Profile Picture</h4>
+                            <div class="flex gap-3">
+                                <label class="btn btn-sm btn-primary cursor-pointer">
+                                    Upload new
+                                    <input type="file" name="profile_picture" accept="image/*" class="hidden"
+                                        onchange="document.getElementById('file-upload-name').innerText = this.files[0]?.name || ''">
+                                </label>
+                                <!-- We will just hide remove logic for simplicity as standard behavior -->
+                            </div>
+                            <span id="file-upload-name"
+                                class="text-xs text-base-content/60 font-medium truncate max-w-[200px]"></span>
+                        </div>
+                    </div>
+
+                    <!-- Form Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-control w-full">
+                            <label class="label pb-1"><span
+                                    class="label-text font-bold text-base-content/70 uppercase tracking-wide text-[11px]">First
+                                    Name</span></label>
+                            <input type="text" name="first_name" value="{{ user.first_name }}"
+                                class="input input-bordered w-full rounded-xl focus:border-primary" />
+                        </div>
+                        <div class="form-control w-full">
+                            <label class="label pb-1"><span
+                                    class="label-text font-bold text-base-content/70 uppercase tracking-wide text-[11px]">Last
+                                    Name</span></label>
+                            <input type="text" name="last_name" value="{{ user.last_name }}"
+                                class="input input-bordered w-full rounded-xl focus:border-primary" />
+                        </div>
+                        <div class="form-control w-full">
+                            <label class="label pb-1"><span
+                                    class="label-text font-bold text-base-content/70 uppercase tracking-wide text-[11px]">Email
+                                    Address</span></label>
+                            <input type="email" name="email" value="{{ user.email }}"
+                                class="input input-bordered w-full rounded-xl focus:border-primary" />
+                        </div>
+                        <div class="form-control w-full">
+                            <label class="label pb-1"><span
+                                    class="label-text font-bold text-base-content/70 uppercase tracking-wide text-[11px]">Phone
+                                    Number</span></label>
+                            <input type="tel" name="phone_number" value="{{ profile.phone_number|default:'' }}"
+                                placeholder="+1 (555) 000-0000"
+                                class="input input-bordered w-full rounded-xl focus:border-primary" />
+                        </div>
+                    </div>
+
+                    <div class="form-control w-full">
+                        <label class="label pb-1"><span
+                                class="label-text font-bold text-base-content/70 uppercase tracking-wide text-[11px]">Bio
+                                summary</span></label>
+                        <textarea name="bio" class="textarea textarea-bordered h-24 rounded-xl focus:border-primary"
+                            placeholder="A little about yourself...">{{ profile.bio|default:'' }}</textarea>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-6 border-t border-base-200">
+                        <button type="button" class="btn btn-ghost px-6 rounded-xl">Cancel</button>
+                        <button type="submit" class="btn btn-primary px-8 shadow-md rounded-xl">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- ORDERS PANEL -->
+            <div id="panel-orders"
+                class="settings-panel hidden max-w-2xl mx-auto w-full transition-opacity duration-300 opacity-0">
+                <h3 class="text-2xl font-bold text-base-content mb-2 border-b border-base-200 pb-4">My Orders</h3>
+                <p class="text-base-content/60 text-sm mb-8 mt-2">Track your upcycled garments and invoices.</p>
+
+                <div class="space-y-4">
+                    <!-- Single Order Item -->
+                    <div
+                        class="flex flex-col border border-base-200 rounded-xl p-5 hover:border-primary/30 transition-colors bg-base-100/50">
+                        <div class="flex justify-between items-center border-b border-base-200/60 pb-3 mb-3">
+                            <div>
+                                <p class="text-sm font-bold text-base-content">Order #FA-1090</p>
+                                <p class="text-xs text-base-content/50 mt-0.5">Placed on Oct 24, 2026</p>
+                            </div>
+                            <div class="badge badge-success badge-sm font-semibold uppercase tracking-wider">Delivered
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 bg-base-200 rounded-lg flex items-center justify-center shrink-0">
+                                <i data-lucide="package" class="w-6 h-6 text-base-content/50"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-base-content text-sm md:text-base">Vintage Denim Jacket</h4>
+                                <p class="text-xs text-base-content/60 mt-0.5">Upcycled Collection</p>
+                            </div>
+                            <div class="font-bold text-base-content">
+                                ₹3,500
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end gap-2 pt-3">
+                            <button class="btn btn-xs btn-outline border-base-300 hover:border-primary">Track
+                                Order</button>
+                            <button class="btn btn-xs btn-ghost text-primary">View Invoice</button>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <!-- ADDRESS PANEL -->
+            <div id="panel-address"
+                class="settings-panel hidden max-w-2xl mx-auto w-full transition-opacity duration-300 opacity-0">
+                <div class="flex justify-between items-end mb-8 border-b border-base-200 pb-4">
+                    <div>
+                        <h3 class="text-2xl font-bold text-base-content mb-1">My Addresses</h3>
+                        <p class="text-base-content/60 text-sm">Manage your shipping destinations.</p>
+                    </div>
+                    <button class="btn btn-primary btn-sm rounded-lg shadow-sm gap-1.5"
+                        onclick="addAddressModal.showModal()">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Add New
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 gap-5">
+                    {% if not addresses %}
+                    <div class="text-center py-12 border-2 border-dashed border-base-200 rounded-xl bg-base-100/30">
+                        <i data-lucide="map-pin" class="w-8 h-8 mx-auto text-base-content/30 mb-3"></i>
+                        <p class="text-base-content/60 text-sm">You haven't added any shipping addresses yet.</p>
+                    </div>
+                    {% else %}
+                    {% for addr in addresses %}
+                    <div
+                        class="border {% if addr.is_default %}border-2 border-primary/50 bg-primary/5{% else %}border-base-200 bg-base-100 hover:border-base-300{% endif %} relative rounded-xl p-5 hover:shadow-md transition-all">
+                        {% if addr.is_default %}
+                        <span
+                            class="absolute top-4 right-5 badge badge-primary badge-sm font-bold tracking-wider uppercase">Default</span>
+                        {% endif %}
+
+                        <h4 class="font-bold text-base-content text-lg mb-2 flex items-center gap-2">
+                            {{ addr.full_name }}
+                        </h4>
+                        <p class="text-sm text-base-content/70 leading-relaxed mb-4">
+                            {{ addr.address_line }}<br>
+                            {{ addr.city }}, {{ addr.state }} {{ addr.postal_code }}<br>
+                            {{ addr.country }}
+                        </p>
+
+                        <div
+                            class="flex items-center gap-2 text-sm text-base-content/80 mb-5 font-medium border-b {% if addr.is_default %}border-primary/10{% else %}border-base-200{% endif %} pb-4 gap-x-2">
+                            <i data-lucide="phone" class="w-4 h-4 text-base-content/50"></i> {{ addr.phone_number }}
+                        </div>
+
+                        <div class="flex gap-3 items-center w-full">
+                            <button
+                                class="btn btn-xs btn-outline hover:bg-base-200 hover:text-base-content border-base-300"
+                                onclick="openEditModal({{ addr.id }}, '{{ addr.full_name|escapejs }}', '{{ addr.address_line|escapejs }}', '{{ addr.city|escapejs }}', '{{ addr.state|escapejs }}', '{{ addr.postal_code|escapejs }}', '{{ addr.country|escapejs }}', '{{ addr.phone_number|escapejs }}', {{ addr.is_default|yesno:'true,false' }})">Edit</button>
+
+                            <button type="button" class="btn btn-xs btn-ghost text-error hover:bg-error/10"
+                                onclick="openDeleteModal({{ addr.id }})">Remove</button>
+
+                            <div class="flex-1"></div>
+
+                            {% if not addr.is_default %}
+                            <form method="POST" action="{% url 'set_default_address' addr.id %}">
+                                {% csrf_token %}
+                                <button type="submit"
+                                    class="text-xs font-semibold text-primary/70 hover:text-primary hover:underline">Set
+                                    as default</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ========================= MODALS ========================= -->
+
+<!-- ADD ADDRESS MODAL -->
+<dialog id="addAddressModal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box p-8 rounded-2xl max-w-md">
+        <h3 class="font-bold text-2xl mb-6 text-base-content">Add New Address</h3>
+        <form method="POST" action="{% url 'add_address' %}" class="space-y-4">
+            {% csrf_token %}
+            <div class="form-control w-full">
+                <label class="label pb-1"><span class="label-text-alt font-bold uppercase tracking-wider">Full
+                        Name</span></label>
+                <input type="text" name="full_name" required class="input input-bordered w-full" />
+            </div>
+            <div class="form-control w-full">
+                <label class="label pb-1"><span class="label-text-alt font-bold uppercase tracking-wider">Street
+                        Address</span></label>
+                <input type="text" name="address_line" required class="input input-bordered w-full" />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-control w-full">
+                    <label class="label pb-1"><span
+                            class="label-text-alt font-bold uppercase tracking-wider">City</span></label>
+                    <input type="text" name="city" required class="input input-bordered w-full" />
+                </div>
+                <div class="form-control w-full">
+                    <label class="label pb-1"><span
+                            class="label-text-alt font-bold uppercase tracking-wider">State</span></label>
+                    <input type="text" name="state" required class="input input-bordered w-full" />
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-control w-full">
+                    <label class="label pb-1"><span class="label-text-alt font-bold uppercase tracking-wider">Postal
+                            Code</span></label>
+                    <input type="text" name="postal_code" required class="input input-bordered w-full" />
+                </div>
+                <div class="form-control w-full">
+                    <label class="label pb-1"><span
+                            class="label-text-alt font-bold uppercase tracking-wider">Country</span></label>
+                    <input type="text" name="country" value="India" class="input input-bordered w-full" />
+                </div>
+            </div>
+            <div class="form-control w-full mb-2">
+                <label class="label pb-1"><span class="label-text-alt font-bold uppercase tracking-wider">Phone
+                        Number</span></label>
+                <input type="tel" name="phone_number" required class="input input-bordered w-full" />
+            </div>
+            <div class="form-control">
+                <label class="label cursor-pointer justify-start gap-3">
+                    <input type="checkbox" name="is_default" class="checkbox checkbox-primary" />
+                    <span class="label-text font-medium mt-0.5">Set as default shipping address</span>
+                </label>
+            </div>
+            <div class="modal-action mt-6 pt-4 border-t border-base-200">
+                <button type="button" class="btn btn-ghost" onclick="addAddressModal.close()">Cancel</button>
+                <button type="submit" class="btn btn-primary px-8">Save Address</button>
+            </div>
+        </form>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+<!-- EDIT ADDRESS MODAL -->
+<dialog id="editAddressModal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box p-8 rounded-2xl max-w-md">
+        <h3 class="font-bold text-2xl mb-6 text-base-content">Edit Address</h3>
+        <form id="editAddressForm" method="POST" action="" class="space-y-4">
+            {% csrf_token %}
+            <div class="form-control w-full">
+                <label class="label pb-1"><span class="label-text-alt font-bold uppercase tracking-wider">Full
+                        Name</span></label>
+                <input type="text" name="full_name" id="edit_full_name" required class="input input-bordered w-full" />
+            </div>
+            <div class="form-control w-full">
+                <label class="label pb-1"><span class="label-text-alt font-bold uppercase tracking-wider">Street
+                        Address</span></label>
+                <input type="text" name="address_line" id="edit_address_line" required
+                    class="input input-bordered w-full" />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-control w-full">
+                    <label class="label pb-1"><span
+                            class="label-text-alt font-bold uppercase tracking-wider">City</span></label>
+                    <input type="text" name="city" id="edit_city" required class="input input-bordered w-full" />
+                </div>
+                <div class="form-control w-full">
+                    <label class="label pb-1"><span
+                            class="label-text-alt font-bold uppercase tracking-wider">State</span></label>
+                    <input type="text" name="state" id="edit_state" required class="input input-bordered w-full" />
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-control w-full">
+                    <label class="label pb-1"><span class="label-text-alt font-bold uppercase tracking-wider">Postal
+                            Code</span></label>
+                    <input type="text" name="postal_code" id="edit_postal_code" required
+                        class="input input-bordered w-full" />
+                </div>
+                <div class="form-control w-full">
+                    <label class="label pb-1"><span
+                            class="label-text-alt font-bold uppercase tracking-wider">Country</span></label>
+                    <input type="text" name="country" id="edit_country" class="input input-bordered w-full" />
+                </div>
+            </div>
+            <div class="form-control w-full mb-2">
+                <label class="label pb-1"><span class="label-text-alt font-bold uppercase tracking-wider">Phone
+                        Number</span></label>
+                <input type="tel" name="phone_number" id="edit_phone_number" required
+                    class="input input-bordered w-full" />
+            </div>
+            <div class="form-control" id="editDefaultContainer">
+                <label class="label cursor-pointer justify-start gap-3">
+                    <input type="checkbox" name="is_default" id="edit_is_default" class="checkbox checkbox-primary" />
+                    <span class="label-text font-medium mt-0.5">Set as default shipping address</span>
+                </label>
+            </div>
+            <div class="modal-action mt-6 pt-4 border-t border-base-200">
+                <button type="button" class="btn btn-ghost" onclick="editAddressModal.close()">Cancel</button>
+                <button type="submit" class="btn btn-primary px-8">Update Address</button>
+            </div>
+        </form>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+<!-- DELETE ADDRESS MODAL -->
+<dialog id="deleteAddressModal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box p-8 rounded-2xl max-w-sm">
+        <h3 class="font-bold text-xl mb-4 text-base-content flex items-center gap-2">
+            <i data-lucide="alert-triangle" class="w-6 h-6 text-error"></i>
+            Remove Address
+        </h3>
+        <p class="text-base-content/70 mb-6 text-sm leading-relaxed">Are you sure you want to remove this shipping
+            address? This action cannot be undone.</p>
+        <div class="modal-action mt-6 gap-3">
+            <form method="dialog">
+                <button class="btn btn-ghost">Cancel</button>
+            </form>
+            <form id="deleteAddressForm" method="POST" action="">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-error px-6 text-error-content">Yes, Remove</button>
+            </form>
+        </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+</div>
+</div>
+</div>
+
+<!-- Tab Switching Logic -->
+<script>
+    // Keep track of active tab across reloads (important for form saving)
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeTabStr = urlParams.get('tab') || sessionStorage.getItem('activeSettingsTab') || 'profile';
+        // Check if there are messages. If so, try to determine which panel we should be on 
+        // We will default to session storage saving for smooth experience
+        switchTab(activeTabStr, false);
+    });
+
+    function switchTab(tabId, preventDefault = true) {
+        if (preventDefault && event) event.preventDefault();
+
+        // Save the active tab so form submissions return to the correct place
+        sessionStorage.setItem('activeSettingsTab', tabId);
+
+        // Hide all panels
+        document.querySelectorAll('.settings-panel').forEach(panel => {
+            panel.classList.add('hidden');
+            panel.classList.replace('opacity-100', 'opacity-0');
+        });
+
+        // Show target panel with slight delay for fade
+        const targetPanel = document.getElementById('panel-' + tabId);
+        targetPanel.classList.remove('hidden');
+        setTimeout(() => {
+            targetPanel.classList.replace('opacity-0', 'opacity-100');
+        }, 50);
+
+        // Reset all tabs
+        document.querySelectorAll('.settings-tab').forEach(tab => {
+            tab.classList.remove('bg-base-200');
+            tab.classList.add('hover:bg-base-200/50');
+
+            const iconContainer = tab.querySelector('.icon-container');
+            iconContainer.classList.remove('bg-primary', 'text-primary-content');
+            iconContainer.classList.add('bg-base-100', 'border', 'border-base-300', 'text-base-content/70');
+
+            const tabText = tab.querySelector('.tab-text');
+            tabText.classList.remove('font-bold', 'text-base-content');
+            tabText.classList.add('font-medium', 'text-base-content/70');
+        });
+
+        // Activate clicked tab
+        const activeTab = document.getElementById('tab-' + tabId);
+        activeTab.classList.add('bg-base-200');
+        activeTab.classList.remove('hover:bg-base-200/50');
+
+        const activeIconContainer = activeTab.querySelector('.icon-container');
+        activeIconContainer.classList.add('bg-primary', 'text-primary-content');
+        activeIconContainer.classList.remove('bg-base-100', 'border', 'border-base-300', 'text-base-content/70');
+
+        const activeTabText = activeTab.querySelector('.tab-text');
+        activeTabText.classList.add('font-bold', 'text-base-content');
+        activeTabText.classList.remove('font-medium', 'text-base-content/70');
+
+        // Re-init icons to be safe
+        if (window.lucide) window.lucide.createIcons();
+    }
+
+    // Edit Modal populator
+    function openEditModal(id, fullName, address, city, state, postal, country, phone, isDefault) {
+        const form = document.getElementById('editAddressForm');
+        form.action = `/settings/address/${id}/edit/`;
+
+        document.getElementById('edit_full_name').value = fullName;
+        document.getElementById('edit_address_line').value = address;
+        document.getElementById('edit_city').value = city;
+        document.getElementById('edit_state').value = state;
+        document.getElementById('edit_postal_code').value = postal;
+        document.getElementById('edit_country').value = country;
+        document.getElementById('edit_phone_number').value = phone;
+
+        const defaultCheck = document.getElementById('edit_is_default');
+        defaultCheck.checked = isDefault;
+        // If already default, maybe hide or disable the checkbox to prevent unchecking it directly
+        // since setting default is easier handled by toggling another.
+
+        document.getElementById('editAddressModal').showModal();
+    }
+
+    // Delete Modal populator
+    function openDeleteModal(id) {
+        const form = document.getElementById('deleteAddressForm');
+        form.action = `/settings/address/${id}/delete/`;
+        document.getElementById('deleteAddressModal').showModal();
+    }
+</script>
+
+<style>
+    .hidden-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .hidden-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+{% endblock %}

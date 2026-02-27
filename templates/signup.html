@@ -1,0 +1,122 @@
+{% extends 'auth_base.html' %}
+
+{% block title %}Create Account - fAishon{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-4xl">
+    <div class="floating-box bg-base-100 shadow-2xl border border-base-300 w-full overflow-hidden">
+        <div class="flex flex-col md:flex-row">
+
+            <!-- Left Side: Info Panel -->
+            <div
+                class="bg-primary/5 border-b md:border-b-0 md:border-r border-base-300 p-10 md:w-5/12 flex flex-col justify-center">
+                <h2 class="text-2xl font-bold text-base-content mb-3">Join
+                    <span class="text-base-content">f<span class="text-primary">Ai</span>shon</span>
+                </h2>
+                <p class="text-base-content/60 text-sm leading-relaxed mb-8">
+                    Create your free account and start giving your wardrobe a second life.
+                </p>
+
+                <!-- What you get -->
+                <div class="flex flex-col gap-4">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-9 h-9 bg-primary/10 text-primary rounded-box flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="camera" class="w-4 h-4"></i>
+                        </div>
+                        <span class="text-sm text-base-content/70">Upload and analyze garments</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-9 h-9 bg-primary/10 text-primary rounded-box flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="recycle" class="w-4 h-4"></i>
+                        </div>
+                        <span class="text-sm text-base-content/70">Get creative upcycling ideas</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-9 h-9 bg-primary/10 text-primary rounded-box flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="heart-handshake" class="w-4 h-4"></i>
+                        </div>
+                        <span class="text-sm text-base-content/70">Donate or swap with others</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-9 h-9 bg-primary/10 text-primary rounded-box flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="store" class="w-4 h-4"></i>
+                        </div>
+                        <span class="text-sm text-base-content/70">Buy and sell on the marketplace</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Sign Up Form -->
+            <div class="p-10 md:w-7/12 flex flex-col justify-center">
+                <h1 class="text-2xl font-bold text-base-content mb-1">Create Account</h1>
+                <p class="text-base-content/50 text-sm mb-8">Fill in your details to get started.</p>
+
+                <form method="POST" action="{% url 'signup' %}" class="space-y-4">
+                    {% csrf_token %}
+
+                    <!-- Show error messages if any -->
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-error text-sm rounded-box">
+                        <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                        <span>{{ message }}</span>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="form-control w-full">
+                            <label class="label"><span class="label-text font-medium text-base-content/80">First
+                                    Name</span></label>
+                            <input type="text" name="first_name" placeholder="John"
+                                class="input input-bordered w-full rounded-box" required />
+                        </div>
+                        <div class="form-control w-full">
+                            <label class="label"><span class="label-text font-medium text-base-content/80">Last
+                                    Name</span></label>
+                            <input type="text" name="last_name" placeholder="Doe"
+                                class="input input-bordered w-full rounded-box" required />
+                        </div>
+                    </div>
+
+                    <div class="form-control w-full">
+                        <label class="label"><span class="label-text font-medium text-base-content/80">Email
+                                Address</span></label>
+                        <input type="email" name="email" placeholder="you@example.com"
+                            class="input input-bordered w-full rounded-box" required />
+                    </div>
+
+                    <div class="form-control w-full">
+                        <label class="label"><span
+                                class="label-text font-medium text-base-content/80">Password</span></label>
+                        <input type="password" name="password" placeholder="Create a password"
+                            class="input input-bordered w-full rounded-box" required />
+                        <span class="label-text-alt text-base-content/50 mt-1">Must be at least 8 characters.</span>
+                    </div>
+
+                    <div class="form-control mt-1">
+                        <label class="label cursor-pointer justify-start gap-3 p-0">
+                            <input type="checkbox" required
+                                class="checkbox checkbox-primary checkbox-sm border-base-300" />
+                            <span class="label-text text-sm text-base-content/70">I agree to the
+                                <a href="#" class="text-primary hover:underline">Terms of Service</a></span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-full text-base mt-4 h-12">
+                        Create Account
+                    </button>
+                </form>
+
+                <p class="text-center mt-8 text-sm text-base-content/60">
+                    Already have an account?
+                    <a href="{% url 'login' %}" class="text-primary hover:underline font-bold">Log in</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

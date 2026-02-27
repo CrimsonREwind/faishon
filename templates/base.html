@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="forest">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}fAishon{% endblock %}</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.1/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Sidebar styles */
+        .sidebar-container {
+            transition: width 0.3s ease;
+        }
+
+        /* The floating white containers - now using base-100 to sync with themes */
+        .floating-box {
+            border-radius: var(--rounded-box, 1rem);
+        }
+
+        /* Hide scrollbars globally */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        * {
+            -ms-overflow-style: none;
+            /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        /* Submenu positioning fix for Settings > Theme */
+        .group:hover .group-hover\:block {
+            display: block;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body
+    class="h-screen w-screen bg-base-200 text-base-content overflow-hidden flex p-4 gap-4 transition-colors duration-300">
+
+    <!-- Sidebar -->
+    <!-- Collapsed width: w-20, Expanded width: w-64 -->
+    <aside id="sidebar"
+        class="sidebar-container w-20 h-full floating-box bg-base-100 shadow-xl border border-base-300 flex flex-col items-center py-6 relative z-50 transition-all duration-300 flex-shrink-0">
+
+        <!-- Logo + Toggle Button Row -->
+        <div class="w-full h-12 mb-4 flex items-center justify-center px-3 relative">
+            <a href="{% url 'home' %}"
+                class="opacity-0 md:group-[.expanded]:opacity-100 transition-opacity sidebar-text whitespace-nowrap pointer-events-none md:group-[.expanded]:pointer-events-auto">
+                <span class="text-2xl font-bold text-base-content">f<span class="text-primary">Ai</span>shon</span>
+            </a>
+            <button id="sidebarToggle"
+                class="absolute right-4 btn btn-ghost btn-circle border border-base-300 text-base-content toggle-btn flex items-center justify-center">
+                <i data-lucide="panel-left" id="sidebarToggleIcon" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- Navigation Links (Middle) -->
+        <nav class="flex-1 w-full flex flex-col gap-4 px-3 overflow-y-auto sidebar-scroll">
+
+            <!-- Link 1: AI Upcycle -->
+            <a href="{% url 'home' %}"
+                class="flex items-center gap-4 p-2 rounded-box hover:bg-base-200 transition-colors group relative nav-item w-full {% if request.resolver_match.url_name == 'home' %}bg-primary/20 text-primary{% endif %}">
+                <div
+                    class="w-10 h-10 rounded-box {% if request.resolver_match.url_name == 'home' %}bg-primary text-primary-content{% else %}bg-base-300 text-base-content border border-base-200{% endif %} flex-shrink-0 flex items-center justify-center shadow-sm">
+                    <i data-lucide="recycle" class="w-5 h-5"></i>
+                </div>
+                <!-- Text (hidden when collapsed) -->
+                <span
+                    class="font-medium whitespace-nowrap opacity-0 md:group-[.expanded]:opacity-100 transition-opacity sidebar-text pointer-events-none absolute left-14 hidden lg:block text-base-content">
+                    AI Upcycle
+                </span>
+            </a>
+
+            <!-- Link 2: Community -->
+            <a href="#"
+                class="flex items-center gap-4 p-2 rounded-box hover:bg-base-200 transition-colors group relative nav-item w-full">
+                <div
+                    class="w-10 h-10 rounded-box bg-base-300 flex-shrink-0 border border-base-200 flex items-center justify-center text-base-content">
+                    <i data-lucide="users" class="w-5 h-5"></i>
+                </div>
+                <!-- Text -->
+                <span
+                    class="font-medium whitespace-nowrap opacity-0 md:group-[.expanded]:opacity-100 transition-opacity sidebar-text pointer-events-none absolute left-14 hidden lg:block text-base-content">
+                    Community
+                </span>
+            </a>
+
+            <!-- Link 3: MarketPlace -->
+            <a href="#"
+                class="flex items-center gap-4 p-2 rounded-box hover:bg-base-200 transition-colors group relative nav-item w-full">
+                <div
+                    class="w-10 h-10 rounded-box bg-base-300 flex-shrink-0 border border-base-200 flex items-center justify-center text-base-content">
+                    <i data-lucide="store" class="w-5 h-5"></i>
+                </div>
+                <!-- Text -->
+                <span
+                    class="font-medium whitespace-nowrap opacity-0 md:group-[.expanded]:opacity-100 transition-opacity sidebar-text pointer-events-none absolute left-14 hidden lg:block text-base-content">
+                    MarketPlace
+                </span>
+            </a>
+
+            <!-- Link 4: Donation -->
+            <a href="#"
+                class="flex items-center gap-4 p-2 rounded-box hover:bg-base-200 transition-colors group relative nav-item w-full">
+                <div
+                    class="w-10 h-10 rounded-box bg-base-300 flex-shrink-0 border border-base-200 flex items-center justify-center text-base-content">
+                    <i data-lucide="heart-handshake" class="w-5 h-5"></i>
+                </div>
+                <!-- Text -->
+                <span
+                    class="font-medium whitespace-nowrap opacity-0 md:group-[.expanded]:opacity-100 transition-opacity sidebar-text pointer-events-none absolute left-14 hidden lg:block text-base-content">
+                    Donation
+                </span>
+            </a>
+
+        </nav>
+
+        <!-- Bottom Actions (Notification & Profile) -->
+        <div class="w-full mt-auto flex flex-col items-center gap-4 px-3 relative">
+
+            <!-- Notifications Dropout (Mockup 2: Notification Popup.png) -->
+            <div class="dropdown dropdown-top w-full nav-item group relative">
+                <div tabindex="0" role="button"
+                    class="flex items-center gap-4 p-2 rounded-box hover:bg-base-200 transition-colors w-full cursor-pointer">
+                    <div
+                        class="w-10 h-10 rounded-box border border-base-300 bg-base-200 flex items-center justify-center flex-shrink-0 text-base-content">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                    </div>
+                    <!-- Text -->
+                    <span
+                        class="font-medium whitespace-nowrap opacity-0  md:group-[.expanded]:opacity-100 transition-opacity sidebar-text pointer-events-none absolute left-14 hidden lg:block text-base-content text-sm">
+                        Notifications
+                    </span>
+                </div>
+                <!-- Notification Content -->
+                <div tabindex="0"
+                    class="dropdown-content mb-4 z-[100] p-6 shadow-xl bg-base-100 border border-base-300 rounded-box w-64 h-64 flex items-center justify-center text-base-content">
+                    No Notifications
+                </div>
+            </div>
+
+            <!-- Profile Dropup (Mockup 3: Profile Options.png) -->
+            <div id="profileDropdownContainer" class="dropdown dropdown-top w-full nav-item group relative">
+                <!-- Avatar Button -->
+                <div tabindex="0" role="button"
+                    class="flex items-center gap-4 p-2 rounded-box hover:bg-base-200 transition-colors w-full cursor-pointer">
+                    {% if user.profile.profile_picture %}
+                    <div class="w-10 h-10 rounded-box overflow-hidden flex-shrink-0 border border-base-300">
+                        <img src="{{ user.profile.profile_picture.url }}" alt="Profile"
+                            class="w-full h-full object-cover">
+                    </div>
+                    {% else %}
+                    <div
+                        class="w-10 h-10 rounded-box bg-neutral text-neutral-content flex items-center justify-center font-semibold flex-shrink-0 uppercase">
+                        {{ user.first_name.0|default:'A' }}{{ user.last_name.0|default:'' }}
+                    </div>
+                    {% endif %}
+                    <!-- Expanded Name Text -->
+                    <span
+                        class="font-medium whitespace-nowrap opacity-0 md:group-[.expanded]:opacity-100 transition-opacity sidebar-text pointer-events-none absolute left-14 hidden lg:block text-base-content text-sm">
+                        {{ user.get_full_name }}
+                    </span>
+                </div>
+
+                <!-- Profile Menu Content -->
+                <ul tabindex="0"
+                    class="dropdown-content mb-4 z-[100] menu p-4 shadow-xl border border-base-300 bg-base-100 rounded-box w-64 text-base-content relative gap-2">
+
+                    <li class="rounded-box"><a href="{% url 'settings' %}"
+                            class="flex gap-3 hover:bg-base-200 rounded-box">
+                            <i data-lucide="settings" class="w-5 h-5 text-base-content/70"></i>
+                            <span class="font-medium">Settings</span>
+                        </a></li>
+
+                    <!-- Nested Theme Menu Using Details -->
+                    <li class="rounded-box">
+                        <details id="themeDropdown">
+                            <summary class="hover:bg-base-200 rounded-box cursor-pointer font-medium">
+                                <div class="flex gap-3 items-center">
+                                    <i data-lucide="palette" class="w-5 h-5 text-base-content/70"></i>
+                                    Theme
+                                </div>
+                            </summary>
+                            <ul
+                                class="!p-2 !m-0 !mt-2 before:hidden w-full grid grid-cols-2 gap-2 bg-base-200/50 rounded-box border border-base-300 shadow-inner relative z-50">
+                                <li><a class="theme-select text-center block w-full hover:bg-base-200 rounded-lg"
+                                        data-theme-val="light">Light</a></li>
+                                <li><a class="theme-select text-center block w-full hover:bg-base-200 rounded-lg"
+                                        data-theme-val="dark">Dark</a></li>
+                                <li><a class="theme-select text-center block w-full hover:bg-base-200 rounded-lg"
+                                        data-theme-val="forest">Forest</a></li>
+                                <li><a class="theme-select text-center block w-full hover:bg-base-200 rounded-lg"
+                                        data-theme-val="retro">Retro</a></li>
+                                <li><a class="theme-select text-center block w-full hover:bg-base-200 rounded-lg"
+                                        data-theme-val="nord">Nord</a></li>
+                                <li><a class="theme-select text-center block w-full hover:bg-base-200 rounded-lg"
+                                        data-theme-val="autumn">Autumn</a></li>
+                                <li><a class="theme-select text-center block w-full hover:bg-base-200 rounded-lg"
+                                        data-theme-val="coffee">Coffee</a></li>
+                                <li><a class="theme-select text-center block w-full hover:bg-base-200 rounded-lg"
+                                        data-theme-val="night">Night</a></li>
+                                <li><a class="theme-select text-center block w-full hover:bg-base-200 rounded-lg"
+                                        data-theme-val="business">Business</a></li>
+                            </ul>
+                        </details>
+                    </li>
+
+                    <li><a class="flex gap-3 hover:bg-base-200 rounded-box">
+                            <i data-lucide="bookmark" class="w-5 h-5 text-base-content/70"></i>
+                            <span class="font-medium">Saved</span>
+                        </a></li>
+                    <li><a class="flex gap-3 hover:bg-base-200 rounded-box">
+                            <i data-lucide="folder" class="w-5 h-5 text-base-content/70"></i>
+                            <span class="font-medium">My Projects</span>
+                        </a></li>
+                    <li><a href="{% url 'logout' %}"
+                            class="flex gap-3 hover:bg-error/20 text-error hover:text-error rounded-box">
+                            <i data-lucide="log-out" class="w-5 h-5 text-error"></i>
+                            <span class="font-medium">Logout</span>
+                        </a></li>
+                </ul>
+            </div>
+
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main
+        class="floating-box bg-base-100 shadow-xl border border-base-300 flex-1 h-full overflow-y-auto relative z-10 p-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Scripts for Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Lucide Icons
+            lucide.createIcons();
+
+            // --- Theme Handling ---
+            const savedTheme = localStorage.getItem('faishon_theme_new') || 'forest';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+
+            const highlightTheme = (activeTheme) => {
+                document.querySelectorAll('.theme-select').forEach(el => {
+                    if (el.getAttribute('data-theme-val') === activeTheme) {
+                        el.classList.add('bg-primary', 'text-primary-content');
+                        el.classList.remove('hover:bg-base-200');
+                    } else {
+                        el.classList.remove('bg-primary', 'text-primary-content');
+                        el.classList.add('hover:bg-base-200');
+                    }
+                });
+            };
+
+            highlightTheme(savedTheme);
+
+            document.querySelectorAll('.theme-select').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    const theme = e.target.getAttribute('data-theme-val');
+                    document.documentElement.setAttribute('data-theme', theme);
+                    localStorage.setItem('faishon_theme_new', theme);
+                    highlightTheme(theme);
+                });
+            });
+
+            // --- Sidebar Toggle Logic ---
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.getElementById('sidebarToggle');
+            const navItems = document.querySelectorAll('.nav-item');
+
+            // Default state tracking (Load from localStorage)
+            let isExpanded = localStorage.getItem('faishon_sidebar_expanded') === 'true';
+
+            // Function to apply the state to the DOM
+            const applySidebarState = () => {
+                const iconEl = document.getElementById('sidebarToggleIcon');
+
+                if (isExpanded) {
+                    sidebar.classList.remove('w-20');
+                    sidebar.classList.add('w-64');
+                    sidebar.classList.add('group', 'expanded');
+
+                    iconEl.setAttribute('data-lucide', 'panel-left-close');
+                    navItems.forEach(item => item.classList.add('expanded'));
+                } else {
+                    sidebar.classList.remove('w-64');
+                    sidebar.classList.add('w-20');
+                    sidebar.classList.remove('group', 'expanded');
+
+                    iconEl.setAttribute('data-lucide', 'panel-left');
+                    navItems.forEach(item => item.classList.remove('expanded'));
+                }
+
+                // Re-render lucide icons to catch the dynamic attribute change
+                lucide.createIcons({ nameAttr: 'data-lucide' });
+            };
+
+            // Apply state on initial load
+            applySidebarState();
+
+            // Handle Click
+            toggleBtn.addEventListener('click', () => {
+                isExpanded = !isExpanded;
+                localStorage.setItem('faishon_sidebar_expanded', isExpanded);
+                applySidebarState();
+            });
+
+            // --- Reset Theme Dropdown on Close ---
+            const profileDropdown = document.getElementById('profileDropdownContainer');
+            const themeDetails = document.getElementById('themeDropdown');
+            if (profileDropdown && themeDetails) {
+                // Close the nested details when the main dropdown loses focus
+                profileDropdown.addEventListener('focusout', (e) => {
+                    // Check if focus moved outside the entire dropdown container
+                    if (!profileDropdown.contains(e.relatedTarget)) {
+                        themeDetails.removeAttribute('open');
+                    }
+                });
+            }
+        });
+    </script>
+
+    <!-- Global Toast Notifications (Django Messages) -->
+    {% if messages %}
+    <div class="toast toast-top toast-center z-[9999] pt-4 pointer-events-none">
+        {% for message in messages %}
+        <div
+            class="alert shadow-lg {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% else %}alert-info{% endif %} text-sm font-medium flex gap-2 hide-after-delay transition-all duration-500 transform translate-y-0 opacity-100 min-w-[300px] pointer-events-auto">
+            <i data-lucide="{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}alert-circle{% else %}info{% endif %}"
+                class="w-5 h-5 shrink-0"></i>
+            <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    <script>
+        // Auto-hide toasts after 4 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.hide-after-delay').forEach(el => {
+                el.classList.replace('translate-y-0', '-translate-y-4');
+                el.classList.replace('opacity-100', 'opacity-0');
+                setTimeout(() => el.remove(), 500); // Wait for transition
+            });
+        }, 4000);
+    </script>
+    {% endif %}
+
+</body>
+
+</html>
