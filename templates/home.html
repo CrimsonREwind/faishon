@@ -12,12 +12,10 @@
     </div>
 
     <!-- MAIN CONTAINER -->
-    <div class="w-full max-w-5xl mx-auto p-0 md:p-4 min-h-[500px] relative overflow-hidden transition-all duration-500"
-        id="appContainer">
+    <div class="w-full max-w-5xl mx-auto transition-all duration-500" id="appContainer">
 
         <!-- STAGE 1: UPLOAD ZONE -->
-        <div id="stageUpload"
-            class="absolute inset-0 p-6 md:p-10 flex flex-col items-center justify-start md:justify-center transition-opacity duration-300 opacity-100 z-10 overflow-y-auto">
+        <div id="stageUpload" class="p-2 md:p-6 flex flex-col items-center transition-opacity duration-300">
 
             <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-center">
 
@@ -97,7 +95,7 @@
 
         <!-- STAGE 2: LOADING SKELETON -->
         <div id="stageLoading"
-            class="absolute inset-0 p-6 md:p-10 flex flex-col items-center justify-center transition-opacity duration-300 opacity-0 pointer-events-none z-0">
+            class="hidden p-6 md:p-10 flex flex-col items-center justify-center transition-opacity duration-300 min-h-[400px]">
             <div class="flex flex-col items-center text-center max-w-md w-full">
                 <!-- Animated Spinner relative to theme -->
                 <div class="relative w-24 h-24 mb-6">
@@ -122,8 +120,7 @@
         </div>
 
         <!-- STAGE 3: RESULTS -->
-        <div id="stageResults"
-            class="absolute inset-0 p-6 md:p-10 flex flex-col transition-opacity duration-300 opacity-0 pointer-events-none z-0 overflow-y-auto hidden-scrollbar">
+        <div id="stageResults" class="hidden p-4 md:p-6 flex flex-col transition-opacity duration-300">
 
             <div class="flex justify-between items-end mb-6 pb-4 border-b border-base-200">
                 <div>
@@ -153,8 +150,7 @@
         </div>
 
         <!-- STAGE 4: INSTRUCTIONS (PHASE 2) -->
-        <div id="stageInstructions"
-            class="absolute inset-0 p-6 md:p-10 flex flex-col transition-opacity duration-300 opacity-0 pointer-events-none z-0 overflow-y-auto hidden-scrollbar">
+        <div id="stageInstructions" class="hidden p-4 md:p-6 flex flex-col transition-opacity duration-300">
 
             <button class="btn btn-ghost btn-sm gap-2 self-start mb-6 text-base-content/70 hover:text-primary"
                 id="btnBackToConcepts">
@@ -371,17 +367,16 @@
         // --- Simulation Logic ---
 
         function switchStage(hideEl, showEl) {
-            hideEl.classList.remove('opacity-100', 'z-10');
-            hideEl.classList.add('opacity-0', 'pointer-events-none', 'z-0');
-
+            // Fade out the current stage
+            hideEl.style.opacity = '0';
             setTimeout(() => {
-                showEl.classList.remove('opacity-0', 'pointer-events-none', 'z-0');
-                showEl.classList.add('opacity-100', 'z-10');
-                // special check for scrollable results
-                if (showEl.id === 'stageResults') {
-                    showEl.style.overflowY = 'auto';
-                }
-            }, 300); // Wait for transition
+                hideEl.classList.add('hidden');
+                hideEl.style.opacity = '';
+                // Show the new stage
+                showEl.classList.remove('hidden');
+                // Scroll to top of container
+                showEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
         }
 
         async function startSimulation(isSample = false) {

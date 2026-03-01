@@ -57,6 +57,12 @@
 
         /* Mobile responsive overrides */
         @media (max-width: 767px) {
+
+            /* Fix 100vh being taller than visible area on mobile browsers */
+            body {
+                height: 100dvh !important;
+            }
+
             #sidebar {
                 width: 16rem !important;
             }
@@ -98,21 +104,8 @@
         <a href="{% url 'home' %}" class="absolute left-1/2 -translate-x-1/2">
             <span class="text-xl font-bold text-base-content">f<span class="text-primary">Ai</span>shon</span>
         </a>
-        <div class="flex items-center gap-2">
-            <span class="text-xs font-bold text-primary flex items-center gap-1">{{ coin_balance }}
-                <i data-lucide="coins" class="w-3 h-3"></i>
-            </span>
-            {% if user.profile.profile_picture %}
-            <a href="{% url 'settings' %}" class="w-8 h-8 rounded-full overflow-hidden border border-base-300 block">
-                <img src="{{ user.profile.profile_picture.url }}" alt="Profile" class="w-full h-full object-cover">
-            </a>
-            {% else %}
-            <a href="{% url 'settings' %}"
-                class="w-8 h-8 rounded-full bg-neutral text-neutral-content flex items-center justify-center text-xs font-semibold uppercase">
-                {{ user.first_name.0|default:'A' }}{{ user.last_name.0|default:'' }}
-            </a>
-            {% endif %}
-        </div>
+        <!-- Empty spacer to keep logo centered -->
+        <div class="w-8"></div>
     </header>
 
     <!-- Mobile Backdrop (closes sidebar drawer when tapped) -->
@@ -135,10 +128,10 @@
 
         <!-- Logo + Toggle Button Row -->
         <div class="w-full h-12 mb-4 flex items-center justify-center px-3 relative">
-            <a href="{% url 'home' %}"
+            <!--<a href="{% url 'home' %}"
                 class="opacity-0 md:group-[.expanded]:opacity-100 transition-opacity sidebar-text whitespace-nowrap pointer-events-none md:group-[.expanded]:pointer-events-auto">
                 <span class="text-2xl font-bold text-base-content">f<span class="text-primary">Ai</span>shon</span>
-            </a>
+            </a>-->
             <button id="sidebarToggle"
                 class="absolute right-4 btn btn-ghost btn-circle border border-base-300 text-base-content toggle-btn flex items-center justify-center">
                 <i data-lucide="panel-left" id="sidebarToggleIcon" class="w-5 h-5"></i>
@@ -566,6 +559,34 @@
             sidebar.querySelectorAll('a[href]:not([href="#"])').forEach(link => {
                 link.addEventListener('click', () => {
                     if (window.innerWidth < 768) closeMobileSidebar();
+                });
+            });
+
+            // --- Toggle Sidebar Dropdowns on Re-click ---
+            // DaisyUI dropdowns open on focus but don't close on second click.
+            // This fixes that by blurring the trigger if the dropdown is already open.
+            sidebar.querySelectorAll('.dropdown > [tabindex="0"][role="button"]').forEach(trigger => {
+                let isOpen = false;
+                trigger.addEventListener('click', (e) => {
+                    if (isOpen) {
+                        // Close by removing focus
+                        document.activeElement.blur();
+                        isOpen = false;
+                        e.preventDefault();
+                        e.stopPropagation();
+                    } else {
+                        isOpen = true;
+                    }
+                });
+                // When dropdown loses focus (closes), reset the flag
+                trigger.closest('.dropdown').addEventListener('focusout', (e) => {
+                    const dropdown = trigger.closest('.dropdown');
+                    // Small delay to let focus settle
+                    setTimeout(() => {
+                        if (!dropdown.contains(document.activeElement)) {
+                            isOpen = false;
+                        }
+                    }, 100);
                 });
             });
 
