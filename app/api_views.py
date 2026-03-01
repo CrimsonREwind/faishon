@@ -4,9 +4,9 @@ import json
 import base64
 import requests
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 
-@csrf_exempt
+@login_required
 def generate_ideas(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Only POST requests are allowed.'}, status=405)
@@ -30,7 +30,7 @@ def generate_ideas(request):
 
         # Nvidia NIM API setup
         invoke_url = "https://integrate.api.nvidia.com/v1/chat/completions"
-        api_key = os.environ.get("NVIDIA_API_KEY", "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")
+        api_key = os.environ.get("NVIDIA_API_KEY", "")
         
         if not api_key:
             return JsonResponse({'error': 'Nvidia API Key is missing on the server.'}, status=500)
@@ -135,7 +135,7 @@ def generate_ideas(request):
         return JsonResponse({'error': f'An unexpected error occurred: {str(e)}'}, status=500)
 
 
-@csrf_exempt
+@login_required
 def generate_instructions(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Only POST requests are allowed.'}, status=405)

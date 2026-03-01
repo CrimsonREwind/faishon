@@ -1,7 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="forest">
+<html lang="en">
 
 <head>
+    <!-- Set theme BEFORE anything renders to prevent flash of wrong theme -->
+    <script>
+        (function () {
+            var t = localStorage.getItem('faishon_theme_new') || 'forest';
+            document.documentElement.setAttribute('data-theme', t);
+            var a = localStorage.getItem('faishon_accent');
+            if (a) document.documentElement.style.setProperty('--p', a);
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}fAishon{% endblock %}</title>
@@ -65,6 +74,12 @@
             // --- Theme Handling ---
             const savedTheme = localStorage.getItem('faishon_theme_new') || 'forest';
             document.documentElement.setAttribute('data-theme', savedTheme);
+
+            // --- Accent Color ---
+            const savedAccent = localStorage.getItem('faishon_accent');
+            if (savedAccent) {
+                document.documentElement.style.setProperty('--p', savedAccent);
+            }
         });
     </script>
 </body>

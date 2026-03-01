@@ -34,7 +34,7 @@
                     <p class="text-xs text-base-content/60 px-2 file-name">Click to upload front</p>
                     <input type="file" id="fileFront" class="hidden file-input-target" accept="image/*" />
                     <!-- Success indicator -->
-                    <div class="success-check absolute top-4 right-4 text-success opacity-0 transition-opacity">
+                    <div class="success-check absolute top-4 right-4 text-primary opacity-0 transition-opacity">
                         <i data-lucide="check-circle-2" class="w-6 h-6"></i>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
                     <p class="text-xs text-base-content/60 px-2 file-name">Click to upload back</p>
                     <input type="file" id="fileBack" class="hidden file-input-target" accept="image/*" />
                     <!-- Success indicator -->
-                    <div class="success-check absolute top-4 right-4 text-success opacity-0 transition-opacity">
+                    <div class="success-check absolute top-4 right-4 text-primary opacity-0 transition-opacity">
                         <i data-lucide="check-circle-2" class="w-6 h-6"></i>
                     </div>
                 </div>
@@ -71,7 +71,7 @@
                     <p class="text-xs text-base-content/60 px-2 file-name">Close-up of fabric</p>
                     <input type="file" id="fileCloseup" class="hidden file-input-target" accept="image/*" />
                     <!-- Success indicator -->
-                    <div class="success-check absolute top-4 right-4 text-success opacity-0 transition-opacity">
+                    <div class="success-check absolute top-4 right-4 text-primary opacity-0 transition-opacity">
                         <i data-lucide="check-circle-2" class="w-6 h-6"></i>
                     </div>
                 </div>
@@ -295,7 +295,7 @@
                 boxElement.classList.add('border-primary', 'bg-primary/5');
                 boxElement.querySelector('.file-name').textContent = fileName;
                 boxElement.querySelector('.success-check').classList.remove('opacity-0');
-                boxElement.querySelector('.icon-container').classList.add('bg-success/20', 'text-success');
+                boxElement.querySelector('.icon-container').classList.add('bg-primary/20', 'text-primary');
                 boxElement.querySelector('.icon-container').classList.remove('bg-primary/10', 'text-primary');
             }
             checkAllFiles();
@@ -350,7 +350,7 @@
                     box.classList.add('border-primary', 'bg-primary/5');
                     box.querySelector('.file-name').textContent = "sample_image.jpg";
                     box.querySelector('.success-check').classList.remove('opacity-0');
-                    box.querySelector('.icon-container').classList.add('bg-success/20', 'text-success');
+                    box.querySelector('.icon-container').classList.add('bg-primary/20', 'text-primary');
                     box.querySelector('.icon-container').classList.remove('bg-primary/10', 'text-primary');
                 });
 
@@ -506,7 +506,7 @@
             box.classList.remove('hidden');
 
             // Score color logic
-            let scoreColor = "text-success";
+            let scoreColor = "text-primary";
             if (info.estimated_reusability_score < 70) scoreColor = "text-warning";
             if (info.estimated_reusability_score < 40) scoreColor = "text-error";
 
@@ -538,9 +538,9 @@
 
             concepts.forEach((concept, index) => {
                 // Badge color based on difficulty
-                let badgeClass = "badge-success";
-                if (concept.difficulty.toLowerCase() === 'medium') badgeClass = "badge-warning";
-                if (concept.difficulty.toLowerCase() === 'hard') badgeClass = "badge-error text-white";
+                let badgeClass = "bg-success text-success-content";
+                if (concept.difficulty.toLowerCase() === 'medium') badgeClass = "bg-warning text-warning-content";
+                if (concept.difficulty.toLowerCase() === 'hard') badgeClass = "bg-error text-error-content";
 
                 const icon = icons[index % icons.length];
 
@@ -562,7 +562,7 @@
                             <div class="flex justify-between items-start gap-2">
                                 <h2 class="card-title text-xl font-bold leading-tight text-base-content">${concept.title}</h2>
                             </div>
-                            <div class="w-fit badge ${badgeClass} badge-outline badge-sm font-semibold tracking-wide uppercase">${concept.difficulty}</div>
+                            <div class="w-fit badge ${badgeClass} badge-sm font-semibold tracking-wide uppercase">${concept.difficulty}</div>
                         </div>
                         
                         <p class="text-sm text-base-content/70 line-clamp-3 mb-6 leading-relaxed">${concept.description}</p>
@@ -651,9 +651,9 @@
                 document.getElementById('instDesc').textContent = concept.description;
                 document.getElementById('instTime').innerHTML = `${data.estimated_time_minutes || 60} <span class="text-sm text-base-content/60">mins</span>`;
 
-                let badgeClass = "badge-success";
-                if (concept.difficulty.toLowerCase() === 'medium') badgeClass = "badge-warning";
-                if (concept.difficulty.toLowerCase() === 'hard') badgeClass = "badge-error text-white";
+                let badgeClass = "bg-success text-success-content";
+                if (concept.difficulty.toLowerCase() === 'medium') badgeClass = "bg-warning text-warning-content";
+                if (concept.difficulty.toLowerCase() === 'hard') badgeClass = "bg-error text-error-content";
                 const diffBadge = document.getElementById('instDifficulty');
                 diffBadge.className = `badge ${badgeClass} badge-sm font-bold tracking-wide uppercase mb-3`;
                 diffBadge.textContent = concept.difficulty;
@@ -724,7 +724,7 @@
                 box.querySelector('.file-name').textContent = box.dataset.type === 'front' ? "Click to upload front" :
                     box.dataset.type === 'back' ? "Click to upload back" : "Close-up of fabric";
                 box.querySelector('.success-check').classList.add('opacity-0');
-                box.querySelector('.icon-container').classList.remove('bg-success/20', 'text-success');
+                box.querySelector('.icon-container').classList.remove('bg-primary/20', 'text-primary');
                 box.querySelector('.icon-container').classList.add('bg-primary/10', 'text-primary');
             });
 

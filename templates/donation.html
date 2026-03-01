@@ -1,0 +1,383 @@
+{% extends 'base.html' %}
+
+{% block title %}Donate Clothes — fAishon{% endblock %}
+
+{% block content %}
+<div class="w-full h-full flex flex-col bg-base-200 rounded-box overflow-y-auto p-4 md:p-8 hidden-scrollbar">
+
+    <!-- Page Header -->
+    <div class="text-center max-w-2xl mx-auto mb-8 mt-4 flex-shrink-0">
+        <h1 class="text-3xl md:text-4xl font-bold text-primary mb-3">Donate Clothes</h1>
+        <p class="text-base-content/70">Give your unused clothes a second life. Drop them off at a center near you or
+            schedule a free pickup from your doorstep.</p>
+    </div>
+
+    <!-- Donation Method Cards -->
+    <div class="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+
+        <!-- Self Drop Card -->
+        <div class="bg-base-100 border border-base-200 rounded-box p-8 flex flex-col items-center text-center hover:shadow-lg transition-shadow cursor-pointer group"
+            onclick="openDonationModal('self_drop')">
+            <div
+                class="w-20 h-20 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                <i data-lucide="map-pin" class="w-10 h-10"></i>
+            </div>
+            <h3 class="text-xl font-bold text-base-content mb-2">Self Drop-off</h3>
+            <p class="text-sm text-base-content/60 leading-relaxed mb-6">
+                Visit any of our partner collection centers and hand over your clothes directly. Quick and easy.
+            </p>
+
+            <!-- Center Info -->
+            <div class="w-full bg-base-200/50 rounded-xl border border-base-200 p-4 text-left space-y-3">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-base-content/50">Nearby Centers</h4>
+                <div class="flex items-start gap-3">
+                    <i data-lucide="building-2" class="w-4 h-4 text-primary mt-0.5 shrink-0"></i>
+                    <div>
+                        <p class="text-sm font-semibold text-base-content">fAishon Hub — Central</p>
+                        <p class="text-xs text-base-content/50">MG Road, Bengaluru · Open 9am–7pm</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <i data-lucide="building-2" class="w-4 h-4 text-primary mt-0.5 shrink-0"></i>
+                    <div>
+                        <p class="text-sm font-semibold text-base-content">fAishon Hub — North</p>
+                        <p class="text-xs text-base-content/50">Rajaji Nagar, Bengaluru · Open 10am–6pm</p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-sm mt-6 gap-2">
+                <i data-lucide="package-plus" class="w-4 h-4"></i> Log a Drop-off
+            </button>
+        </div>
+
+        <!-- Pickup Card -->
+        <div class="bg-base-100 border border-base-200 rounded-box p-8 flex flex-col items-center text-center hover:shadow-lg transition-shadow cursor-pointer group"
+            onclick="openDonationModal('pickup')">
+            <div
+                class="w-20 h-20 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                <i data-lucide="truck" class="w-10 h-10"></i>
+            </div>
+            <h3 class="text-xl font-bold text-base-content mb-2">Schedule Pickup</h3>
+            <p class="text-sm text-base-content/60 leading-relaxed mb-6">
+                Can't visit a center? No worries — we will send someone to pick up the clothes from your address.
+            </p>
+
+            <!-- How it works -->
+            <div class="w-full bg-base-200/50 rounded-xl border border-base-200 p-4 text-left space-y-3">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-base-content/50">How It Works</h4>
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-6 h-6 rounded-full bg-primary text-primary-content text-xs font-bold flex items-center justify-center shrink-0">
+                        1</div>
+                    <p class="text-sm text-base-content/70">Fill in the clothing details</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-6 h-6 rounded-full bg-primary text-primary-content text-xs font-bold flex items-center justify-center shrink-0">
+                        2</div>
+                    <p class="text-sm text-base-content/70">Choose a date and time slot</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-6 h-6 rounded-full bg-primary text-primary-content text-xs font-bold flex items-center justify-center shrink-0">
+                        3</div>
+                    <p class="text-sm text-base-content/70">We pick it up — you earn coins!</p>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-sm mt-6 gap-2">
+                <i data-lucide="calendar-plus" class="w-4 h-4"></i> Schedule a Pickup
+            </button>
+        </div>
+    </div>
+
+    <!-- My Donations History -->
+    <div class="w-full max-w-4xl mx-auto mb-10">
+        <h2 class="text-2xl font-bold text-base-content mb-6 flex items-center gap-2">
+            <i data-lucide="history" class="w-5 h-5 text-primary"></i> My Donations
+        </h2>
+
+        {% if not donations %}
+        <div
+            class="flex flex-col items-center justify-center py-16 text-center bg-base-100 border border-base-200 rounded-box">
+            <div class="w-16 h-16 rounded-full bg-base-200 flex items-center justify-center mb-4">
+                <i data-lucide="heart" class="w-8 h-8 text-primary/40"></i>
+            </div>
+            <h3 class="text-lg font-bold text-base-content mb-1">No donations yet</h3>
+            <p class="text-base-content/50 text-sm max-w-xs">Start by dropping off or scheduling a pickup above!</p>
+        </div>
+
+        {% else %}
+        <div class="space-y-4">
+            {% for d in donations %}
+            <div
+                class="bg-base-100 border border-base-200 rounded-xl p-5 flex flex-col md:flex-row md:items-center gap-4 hover:shadow-sm transition-shadow">
+
+                <!-- Icon based on type -->
+                <div
+                    class="w-12 h-12 rounded-lg flex items-center justify-center shrink-0
+                    {% if d.donation_type == 'self_drop' %}bg-primary/10 text-primary{% else %}bg-accent/10 text-accent{% endif %}">
+                    {% if d.donation_type == 'self_drop' %}
+                    <i data-lucide="map-pin" class="w-6 h-6"></i>
+                    {% else %}
+                    <i data-lucide="truck" class="w-6 h-6"></i>
+                    {% endif %}
+                </div>
+
+                <!-- Details -->
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                        <h4 class="font-bold text-base-content">{{ d.clothing_type }}</h4>
+                        <span class="text-xs text-base-content/40">x{{ d.quantity }}</span>
+                    </div>
+                    <p class="text-sm text-base-content/60">
+                        {{ d.get_donation_type_display }} · {{ d.condition }}
+                        {% if d.pickup_date %} · Pickup on {{ d.pickup_date }}{% endif %}
+                    </p>
+                    {% if d.description %}
+                    <p class="text-xs text-base-content/40 mt-1 truncate">{{ d.description }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Status badge -->
+                <div class="flex items-center gap-3">
+                    <div class="badge badge-sm font-semibold uppercase tracking-wider
+                        {% if d.status == 'pending' %}badge-warning
+                        {% elif d.status == 'confirmed' %}badge-info
+                        {% elif d.status == 'picked_up' or d.status == 'received' %}badge-accent
+                        {% elif d.status == 'completed' %}badge-success
+                        {% endif %}">
+                        {{ d.get_status_display }}
+                    </div>
+
+                    <span class="text-xs font-medium text-primary">+{{ d.coins_earned }} coins</span>
+
+                    {% if d.status == 'pending' %}
+                    <form method="POST" action="{% url 'cancel_donation' d.id %}"
+                        onsubmit="return confirm('Cancel this donation?')">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-ghost btn-xs text-error hover:bg-error/10">Cancel</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- ======================= DONATION MODAL ======================= -->
+<dialog id="donationModal" class="modal modal-bottom sm:modal-middle">
+    <div class="modal-box p-8 rounded-box max-w-lg">
+        <h3 class="font-bold text-2xl mb-1 text-base-content" id="donationModalTitle">Donate Clothes</h3>
+        <p class="text-base-content/50 text-sm mb-6" id="donationModalSubtitle">Fill in the details below.</p>
+
+        <form method="POST" action="{% url 'create_donation' %}" enctype="multipart/form-data" class="space-y-4">
+            {% csrf_token %}
+            <input type="hidden" name="donation_type" id="donationTypeInput" value="self_drop">
+
+            <!-- Clothing Type -->
+            <div class="form-control w-full">
+                <label class="label pb-1">
+                    <span class="label-text-alt font-bold uppercase tracking-wider">Clothing Type</span>
+                </label>
+                <select name="clothing_type" required class="select select-bordered w-full rounded-xl">
+                    <option value="" disabled selected>Select type</option>
+                    <option value="T-Shirt">T-Shirt</option>
+                    <option value="Shirt">Shirt</option>
+                    <option value="Jeans">Jeans</option>
+                    <option value="Trousers">Trousers</option>
+                    <option value="Jacket">Jacket</option>
+                    <option value="Sweater">Sweater</option>
+                    <option value="Dress">Dress</option>
+                    <option value="Saree">Saree</option>
+                    <option value="Kurta">Kurta</option>
+                    <option value="Kids Wear">Kids Wear</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Quantity -->
+                <div class="form-control w-full">
+                    <label class="label pb-1">
+                        <span class="label-text-alt font-bold uppercase tracking-wider">Quantity</span>
+                    </label>
+                    <input type="number" name="quantity" value="1" min="1" max="50" required
+                        class="input input-bordered w-full rounded-xl" />
+                </div>
+                <!-- Condition -->
+                <div class="form-control w-full">
+                    <label class="label pb-1">
+                        <span class="label-text-alt font-bold uppercase tracking-wider">Condition</span>
+                    </label>
+                    <select name="condition" required class="select select-bordered w-full rounded-xl">
+                        <option value="" disabled selected>Select</option>
+                        <option value="Like New">Like New</option>
+                        <option value="Good">Good</option>
+                        <option value="Fair">Fair</option>
+                        <option value="Needs Repair">Needs Repair</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="form-control w-full">
+                <label class="label pb-1">
+                    <span class="label-text-alt font-bold uppercase tracking-wider">Description</span>
+                    <span class="label-text-alt text-base-content/40">optional</span>
+                </label>
+                <textarea name="description" rows="2" placeholder="Any extra details, e.g. brand, color, size..."
+                    class="textarea textarea-bordered w-full rounded-xl leading-relaxed"></textarea>
+            </div>
+
+            <!-- Photo -->
+            <div class="form-control w-full">
+                <label class="label pb-1">
+                    <span class="label-text-alt font-bold uppercase tracking-wider">Photo (optional)</span>
+                </label>
+                <label
+                    class="flex items-center gap-3 cursor-pointer border border-base-300 rounded-xl p-4 hover:border-primary transition-colors">
+                    <i data-lucide="image-plus" class="w-5 h-5 text-primary flex-shrink-0"></i>
+                    <span id="donation-img-name" class="text-sm text-base-content/50 truncate">Click to upload</span>
+                    <input type="file" name="image" accept="image/*" class="hidden"
+                        onchange="document.getElementById('donation-img-name').innerText = this.files[0]?.name || 'Click to upload'">
+                </label>
+            </div>
+
+            <!-- ===== PICKUP-ONLY FIELDS (hidden by default) ===== -->
+            <div id="pickupFields" class="hidden space-y-4 pt-2 border-t border-base-200">
+                <p class="text-xs font-bold uppercase tracking-wider text-primary pt-2">Pickup Details</p>
+
+                <!-- Address -->
+                <div class="form-control w-full">
+                    <label class="label pb-1">
+                        <span class="label-text-alt font-bold uppercase tracking-wider">Pickup Address</span>
+                    </label>
+                    {% if addresses %}
+                    <select name="pickup_address" class="select select-bordered w-full rounded-xl"
+                        id="pickupAddressSelect">
+                        <option value="" disabled selected>Select saved address</option>
+                        {% for addr in addresses %}
+                        <option
+                            value="{{ addr.address_line }}, {{ addr.city }}, {{ addr.state }} {{ addr.postal_code }}">
+                            {{ addr.full_name }} — {{ addr.city }}
+                            {% if addr.is_default %}(Default){% endif %}
+                        </option>
+                        {% endfor %}
+                        <option value="__custom__">Enter a new address</option>
+                    </select>
+                    {% else %}
+                    <textarea name="pickup_address" rows="2" placeholder="Full address for pickup"
+                        class="textarea textarea-bordered w-full rounded-xl"></textarea>
+                    {% endif %}
+                </div>
+
+                <!-- Custom address textarea (shown when "Enter a new address" is selected) -->
+                {% if addresses %}
+                <div class="form-control w-full hidden" id="customAddressBox">
+                    <textarea name="pickup_address_custom" rows="2" placeholder="Type your full pickup address"
+                        class="textarea textarea-bordered w-full rounded-xl" id="customAddressInput"></textarea>
+                </div>
+                {% endif %}
+
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Pickup Date -->
+                    <div class="form-control w-full">
+                        <label class="label pb-1">
+                            <span class="label-text-alt font-bold uppercase tracking-wider">Pickup Date</span>
+                        </label>
+                        <input type="date" name="pickup_date" class="input input-bordered w-full rounded-xl" />
+                    </div>
+                    <!-- Time Slot -->
+                    <div class="form-control w-full">
+                        <label class="label pb-1">
+                            <span class="label-text-alt font-bold uppercase tracking-wider">Time Slot</span>
+                        </label>
+                        <select name="pickup_time_slot" class="select select-bordered w-full rounded-xl">
+                            <option value="" disabled selected>Select</option>
+                            <option value="9am - 12pm">9 AM – 12 PM</option>
+                            <option value="12pm - 3pm">12 PM – 3 PM</option>
+                            <option value="3pm - 6pm">3 PM – 6 PM</option>
+                            <option value="6pm - 9pm">6 PM – 9 PM</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-action mt-6 pt-4 border-t border-base-200">
+                <button type="button" class="btn btn-ghost" onclick="donationModal.close()">Cancel</button>
+                <button type="submit" class="btn btn-primary px-8" id="donationSubmitBtn">Submit Donation</button>
+            </div>
+        </form>
+    </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
+
+<style>
+    .hidden-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .hidden-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+
+<script>
+    // Open the modal and configure it based on donation type
+    function openDonationModal(type) {
+        const modal = document.getElementById('donationModal');
+        const typeInput = document.getElementById('donationTypeInput');
+        const pickupFields = document.getElementById('pickupFields');
+        const title = document.getElementById('donationModalTitle');
+        const subtitle = document.getElementById('donationModalSubtitle');
+        const submitBtn = document.getElementById('donationSubmitBtn');
+
+        typeInput.value = type;
+
+        if (type === 'pickup') {
+            pickupFields.classList.remove('hidden');
+            title.textContent = 'Schedule a Pickup';
+            subtitle.textContent = 'We will collect the clothes from your address.';
+            submitBtn.textContent = 'Schedule Pickup';
+        } else {
+            pickupFields.classList.add('hidden');
+            title.textContent = 'Log a Drop-off';
+            subtitle.textContent = 'Record what you are dropping off at a center.';
+            submitBtn.textContent = 'Submit Drop-off';
+        }
+
+        modal.showModal();
+
+        // Re-init lucide icons inside the modal
+        if (window.lucide) window.lucide.createIcons();
+    }
+
+    // Handle the custom address toggle (if user has saved addresses)
+    document.addEventListener('DOMContentLoaded', () => {
+        const selectEl = document.getElementById('pickupAddressSelect');
+        const customBox = document.getElementById('customAddressBox');
+        const customInput = document.getElementById('customAddressInput');
+
+        if (selectEl && customBox) {
+            selectEl.addEventListener('change', () => {
+                if (selectEl.value === '__custom__') {
+                    customBox.classList.remove('hidden');
+                    // Switch the name so the custom value gets submitted
+                    selectEl.name = '';
+                    customInput.name = 'pickup_address';
+                } else {
+                    customBox.classList.add('hidden');
+                    selectEl.name = 'pickup_address';
+                    customInput.name = '';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

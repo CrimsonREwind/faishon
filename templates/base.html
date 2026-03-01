@@ -1,7 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="forest">
+<html lang="en">
 
 <head>
+    <!-- Set theme BEFORE anything renders to prevent flash of wrong theme -->
+    <script>
+        (function () {
+            var t = localStorage.getItem('faishon_theme_new') || 'forest';
+            document.documentElement.setAttribute('data-theme', t);
+            var a = localStorage.getItem('faishon_accent');
+            if (a) document.documentElement.style.setProperty('--p', a);
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}fAishon{% endblock %}</title>
@@ -54,8 +63,27 @@
 
     <!-- Sidebar -->
     <!-- Collapsed width: w-20, Expanded width: w-64 -->
+    <!-- Set sidebar state BEFORE paint to prevent collapse-then-expand flash -->
+    <script>
+        (function () {
+            var sb = localStorage.getItem('faishon_sidebar_expanded') === 'true';
+            // Write a class on body so the sidebar element below picks up the right width immediately
+            if (sb) document.body.classList.add('sidebar-expanded-init');
+        })();
+    </script>
     <aside id="sidebar"
-        class="sidebar-container w-20 h-full floating-box bg-base-100 shadow-xl border border-base-300 flex flex-col items-center py-6 relative z-50 transition-all duration-300 flex-shrink-0">
+        class="sidebar-container h-full floating-box bg-base-100 shadow-xl border border-base-300 flex flex-col items-center py-6 relative z-50 transition-all duration-300 flex-shrink-0"
+        style="width: 5rem;">
+        <script>
+            // Immediately apply correct width before anything else renders
+            (function () {
+                var sb = document.getElementById('sidebar');
+                if (document.body.classList.contains('sidebar-expanded-init')) {
+                    sb.style.width = '16rem';
+                    sb.classList.add('group', 'expanded');
+                }
+            })();
+        </script>
 
         <!-- Logo + Toggle Button Row -->
         <div class="w-full h-12 mb-4 flex items-center justify-center px-3 relative">
@@ -87,10 +115,10 @@
             </a>
 
             <!-- Link 2: Community -->
-            <a href="#"
-                class="flex items-center gap-4 p-2 rounded-box hover:bg-base-200 transition-colors group relative nav-item w-full">
+            <a href="{% url 'community' %}"
+                class="flex items-center gap-4 p-2 rounded-box hover:bg-base-200 transition-colors group relative nav-item w-full {% if request.resolver_match.url_name == 'community' %}bg-primary/20 text-primary{% endif %}">
                 <div
-                    class="w-10 h-10 rounded-box bg-base-300 flex-shrink-0 border border-base-200 flex items-center justify-center text-base-content">
+                    class="w-10 h-10 rounded-box {% if request.resolver_match.url_name == 'community' %}bg-primary text-primary-content{% else %}bg-base-300 text-base-content border border-base-200{% endif %} flex-shrink-0 flex items-center justify-center text-base-content">
                     <i data-lucide="users" class="w-5 h-5"></i>
                 </div>
                 <!-- Text -->
@@ -100,7 +128,21 @@
                 </span>
             </a>
 
-            <!-- Link 3: MarketPlace -->
+            <!-- Link 3: Donation -->
+            <a href="{% url 'donation' %}"
+                class="flex items-center gap-4 p-2 rounded-box hover:bg-base-200 transition-colors group relative nav-item w-full {% if request.resolver_match.url_name == 'donation' %}bg-primary/20 text-primary{% endif %}">
+                <div
+                    class="w-10 h-10 rounded-box {% if request.resolver_match.url_name == 'donation' %}bg-primary text-primary-content{% else %}bg-base-300 text-base-content border border-base-200{% endif %} flex-shrink-0 flex items-center justify-center">
+                    <i data-lucide="heart-handshake" class="w-5 h-5"></i>
+                </div>
+                <!-- Text -->
+                <span
+                    class="font-medium whitespace-nowrap opacity-0 md:group-[.expanded]:opacity-100 transition-opacity sidebar-text pointer-events-none absolute left-14 hidden lg:block text-base-content">
+                    Donation
+                </span>
+            </a>
+
+            <!-- Link 4: MarketPlace -->
             <a href="#"
                 class="flex items-center gap-4 p-2 rounded-box hover:bg-base-200 transition-colors group relative nav-item w-full">
                 <div
@@ -114,26 +156,67 @@
                 </span>
             </a>
 
-            <!-- Link 4: Donation -->
-            <a href="#"
-                class="flex items-center gap-4 p-2 rounded-box hover:bg-base-200 transition-colors group relative nav-item w-full">
-                <div
-                    class="w-10 h-10 rounded-box bg-base-300 flex-shrink-0 border border-base-200 flex items-center justify-center text-base-content">
-                    <i data-lucide="heart-handshake" class="w-5 h-5"></i>
-                </div>
-                <!-- Text -->
-                <span
-                    class="font-medium whitespace-nowrap opacity-0 md:group-[.expanded]:opacity-100 transition-opacity sidebar-text pointer-events-none absolute left-14 hidden lg:block text-base-content">
-                    Donation
-                </span>
-            </a>
+            
 
         </nav>
 
         <!-- Bottom Actions (Notification & Profile) -->
         <div class="w-full mt-auto flex flex-col items-center gap-4 px-3 relative">
 
-            <!-- Notifications Dropout (Mockup 2: Notification Popup.png) -->
+            <!-- Coin Balance (clickable dropdown) -->
+            <div class="dropdown dropdown-top w-full nav-item group relative">
+                <div tabindex="0" role="button"
+                    class="flex items-center gap-4 p-2 rounded-box bg-primary/10 border border-primary/20 w-full cursor-pointer hover:bg-primary/15 transition-colors overflow-hidden">
+                    <div
+                        class="w-10 h-10 rounded-box bg-primary text-primary-content flex items-center justify-center flex-shrink-0 shadow-sm">
+                        <i data-lucide="coins" class="w-5 h-5"></i>
+                    </div>
+                    <span
+                        class="font-medium whitespace-nowrap opacity-0 md:group-[.expanded]:opacity-100 transition-opacity sidebar-text pointer-events-none absolute left-14 hidden lg:block">
+                        <span class="text-xs font-bold uppercase tracking-wider text-base-content/50 block">fAishon
+                            Coins</span>
+                        <span class="text-sm font-bold text-primary">{{ coin_balance }}</span>
+                    </span>
+                </div>
+                <!-- Coin Popup -->
+                <div tabindex="0"
+                    class="dropdown-content mb-4 z-[100] p-6 shadow-xl bg-base-100 border border-base-300 rounded-box w-64">
+                    <div class="flex items-center gap-3 mb-5 pb-4 border-b border-base-200">
+                        <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                            <i data-lucide="coins" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider text-base-content/50">Current Balance
+                            </p>
+                            <p class="text-2xl font-black text-primary leading-tight">{{ coin_balance }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 rounded-full bg-success/10 text-success flex items-center justify-center">
+                            <i data-lucide="trending-up" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-base-content/50">Lifetime Earned</p>
+                            <p class="text-lg font-bold text-success">{{ coin_balance }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-8 h-8 rounded-full bg-base-200 text-base-content/50 flex items-center justify-center">
+                            <i data-lucide="heart" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-base-content/50">Total Donations</p>
+                            <p class="text-lg font-bold text-base-content">{{ total_donations }}</p>
+                        </div>
+                    </div>
+                    <a href="{% url 'donation' %}" class="btn btn-primary btn-sm w-full mt-5 gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Donate More
+                    </a>
+                </div>
+            </div>
+
+            <!-- Notifications Dropout -->
             <div class="dropdown dropdown-top w-full nav-item group relative">
                 <div tabindex="0" role="button"
                     class="flex items-center gap-4 p-2 rounded-box hover:bg-base-200 transition-colors w-full cursor-pointer">
@@ -181,11 +264,7 @@
                 <ul tabindex="0"
                     class="dropdown-content mb-4 z-[100] menu p-4 shadow-xl border border-base-300 bg-base-100 rounded-box w-64 text-base-content relative gap-2">
 
-                    <li class="rounded-box"><a href="{% url 'settings' %}"
-                            class="flex gap-3 hover:bg-base-200 rounded-box">
-                            <i data-lucide="settings" class="w-5 h-5 text-base-content/70"></i>
-                            <span class="font-medium">Settings</span>
-                        </a></li>
+
 
                     <!-- Nested Theme Menu Using Details -->
                     <li class="rounded-box">
@@ -217,6 +296,51 @@
                                 <li><a class="theme-select text-center block w-full hover:bg-base-200 rounded-lg"
                                         data-theme-val="business">Business</a></li>
                             </ul>
+
+                            <!-- Accent Color Palette -->
+                            <div
+                                class="!p-2 !m-0 !mt-2 before:hidden w-full bg-base-200/50 rounded-box border border-base-300 shadow-inner relative z-50">
+                                <p
+                                    class="text-[10px] font-bold uppercase tracking-widest text-base-content/50 mb-2 px-1">
+                                    Accent Color</p>
+                                <div class="flex flex-wrap gap-2 justify-center">
+                                    <button
+                                        class="accent-select w-7 h-7 rounded-full border-2 border-transparent hover:scale-110 transition-transform"
+                                        data-accent="0.62 0.17 150" style="background: oklch(0.62 0.17 150)"
+                                        title="Green"></button>
+                                    <button
+                                        class="accent-select w-7 h-7 rounded-full border-2 border-transparent hover:scale-110 transition-transform"
+                                        data-accent="0.59 0.2 260" style="background: oklch(0.59 0.2 260)"
+                                        title="Blue"></button>
+                                    <button
+                                        class="accent-select w-7 h-7 rounded-full border-2 border-transparent hover:scale-110 transition-transform"
+                                        data-accent="0.49 0.25 295" style="background: oklch(0.49 0.25 295)"
+                                        title="Purple"></button>
+                                    <button
+                                        class="accent-select w-7 h-7 rounded-full border-2 border-transparent hover:scale-110 transition-transform"
+                                        data-accent="0.55 0.22 5" style="background: oklch(0.55 0.22 5)"
+                                        title="Pink"></button>
+                                    <button
+                                        class="accent-select w-7 h-7 rounded-full border-2 border-transparent hover:scale-110 transition-transform"
+                                        data-accent="0.65 0.2 45" style="background: oklch(0.65 0.2 45)"
+                                        title="Orange"></button>
+                                    <button
+                                        class="accent-select w-7 h-7 rounded-full border-2 border-transparent hover:scale-110 transition-transform"
+                                        data-accent="0.82 0.17 85" style="background: oklch(0.82 0.17 85)"
+                                        title="Gold"></button>
+                                    <button
+                                        class="accent-select w-7 h-7 rounded-full border-2 border-transparent hover:scale-110 transition-transform"
+                                        data-accent="0.67 0.12 185" style="background: oklch(0.67 0.12 185)"
+                                        title="Teal"></button>
+                                    <button
+                                        class="accent-select w-7 h-7 rounded-full border-2 border-transparent hover:scale-110 transition-transform"
+                                        data-accent="0.58 0.22 25" style="background: oklch(0.58 0.22 25)"
+                                        title="Red"></button>
+                                </div>
+                                <button
+                                    class="accent-reset text-[10px] font-semibold text-base-content/40 hover:text-primary mt-2 w-full text-center transition-colors">Reset
+                                    to default</button>
+                            </div>
                         </details>
                     </li>
 
@@ -227,6 +351,11 @@
                     <li><a class="flex gap-3 hover:bg-base-200 rounded-box">
                             <i data-lucide="folder" class="w-5 h-5 text-base-content/70"></i>
                             <span class="font-medium">My Projects</span>
+                        </a></li>
+                    <li class="rounded-box"><a href="{% url 'settings' %}"
+                            class="flex gap-3 hover:bg-base-200 rounded-box">
+                            <i data-lucide="settings" class="w-5 h-5 text-base-content/70"></i>
+                            <span class="font-medium">Settings</span>
                         </a></li>
                     <li><a href="{% url 'logout' %}"
                             class="flex gap-3 hover:bg-error/20 text-error hover:text-error rounded-box">
@@ -275,6 +404,45 @@
                     document.documentElement.setAttribute('data-theme', theme);
                     localStorage.setItem('faishon_theme_new', theme);
                     highlightTheme(theme);
+                    // Clear accent override when switching themes
+                    localStorage.removeItem('faishon_accent');
+                    document.documentElement.style.removeProperty('--p');
+                    document.querySelectorAll('.accent-select').forEach(s => s.classList.remove('ring-2', 'ring-white', 'ring-offset-2', 'ring-offset-base-100'));
+                });
+            });
+
+            // --- Accent Color Handling ---
+            const savedAccent = localStorage.getItem('faishon_accent');
+            if (savedAccent) {
+                document.documentElement.style.setProperty('--p', savedAccent);
+                highlightAccent(savedAccent);
+            }
+
+            function highlightAccent(activeAccent) {
+                document.querySelectorAll('.accent-select').forEach(s => {
+                    if (s.dataset.accent === activeAccent) {
+                        s.classList.add('ring-2', 'ring-white', 'ring-offset-2', 'ring-offset-base-100');
+                    } else {
+                        s.classList.remove('ring-2', 'ring-white', 'ring-offset-2', 'ring-offset-base-100');
+                    }
+                });
+            }
+
+            document.querySelectorAll('.accent-select').forEach(el => {
+                el.addEventListener('click', () => {
+                    const accent = el.dataset.accent;
+                    document.documentElement.style.setProperty('--p', accent);
+                    localStorage.setItem('faishon_accent', accent);
+                    highlightAccent(accent);
+                });
+            });
+
+            // Reset accent to theme default
+            document.querySelectorAll('.accent-reset').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    localStorage.removeItem('faishon_accent');
+                    document.documentElement.style.removeProperty('--p');
+                    document.querySelectorAll('.accent-select').forEach(s => s.classList.remove('ring-2', 'ring-white', 'ring-offset-2', 'ring-offset-base-100'));
                 });
             });
 
@@ -291,15 +459,13 @@
                 const iconEl = document.getElementById('sidebarToggleIcon');
 
                 if (isExpanded) {
-                    sidebar.classList.remove('w-20');
-                    sidebar.classList.add('w-64');
+                    sidebar.style.width = '16rem';
                     sidebar.classList.add('group', 'expanded');
 
                     iconEl.setAttribute('data-lucide', 'panel-left-close');
                     navItems.forEach(item => item.classList.add('expanded'));
                 } else {
-                    sidebar.classList.remove('w-64');
-                    sidebar.classList.add('w-20');
+                    sidebar.style.width = '5rem';
                     sidebar.classList.remove('group', 'expanded');
 
                     iconEl.setAttribute('data-lucide', 'panel-left');

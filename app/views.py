@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
-from .models import UserProfile, Address
+from django.http import JsonResponse
+from .models import UserProfile, Address, Post, Comment, Donation
 
 # -- Public views (no login needed) --
 
@@ -190,3 +191,201 @@ def set_default_address(request, address_id):
     
     messages.success(request, 'Default address updated!')
     return redirect('settings')
+
+
+# -- Community Feed Views --
+
+@login_required
+def community_view(request):
+    # Fetch all posts, newest first, with related data pre-fetched to reduce DB queries
+    posts = Post.objects.all().order_by('-created_at').select_related('author', 'author__profile').prefetch_related('comments', 'likes')
+    return render(request, 'community.html', {'posts': posts})
+
+@login_required
+def create_post(request):
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        tags = request.POST.get('tags', '').strip()
+
+        if not title or not description:
+            messages.error(request, 'Title and description are required.')
+            return redirect('community')
+
+        post = Post(
+            author=request.user,
+            title=title,
+            description=description,
+            tags=tags,
+        )
+
+        # Only attach an image if one was uploaded
+        if 'image' in request.FILES:
+            post.image = request.FILES['image']
+
+        post.save()
+        messages.success(request, 'Post shared with the community!')
+    return redirect('community')
+
+@login_required
+def like_post(request, post_id):
+    if request.method == 'POST':
+        post = get_object_or_404(Post, id=post_id)
+        # Toggle: if already liked, remove the like, otherwise add it
+        if request.user in post.likes.all():
+            post.likes.remove(request.user)
+            liked = False
+        else:
+            post.likes.add(request.user)
+            liked = True
+        
+        # Return JSON for fetch/AJAX calls so the page doesn't reload
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'liked': liked, 'count': post.like_count()})
+    return redirect('community')
+
+@login_required
+def add_comment(request, post_id):
+    if request.method == 'POST':
+        post = get_object_or_404(Post, id=post_id)
+        body = request.POST.get('body', '').strip()
+        if body:
+            comment = Comment.objects.create(post=post, author=request.user, body=body)
+            
+            # Return JSON for AJAX calls
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                author_name = request.user.get_full_name() or request.user.username
+                initials = ((request.user.first_name[:1] + request.user.last_name[:1]).upper()) or 'A'
+                # Safely get avatar — user may not have a profile record yet
+                try:
+                    avatar_url = request.user.profile.profile_picture.url if request.user.profile.profile_picture else None
+                except Exception:
+                    avatar_url = None
+                return JsonResponse({
+                    'success': True,
+                    'comment': {
+                        'id': comment.id,
+                        'delete_url': f'/community/comment/{comment.id}/delete/',
+                        'author': author_name,
+                        'initials': initials,
+                        'avatar_url': avatar_url,
+                        'body': comment.body,
+                    }
+                })
+        else:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': False})
+    return redirect('community')
+
+@login_required
+def delete_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id, author=request.user)
+    if request.method == 'POST':
+        post.delete()
+        messages.success(request, 'Post deleted.')
+    return redirect('community')
+
+@login_required
+def edit_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id, author=request.user)
+
+    if request.method == 'GET':
+        # Return current post data as JSON so the modal can pre-fill the form
+        return JsonResponse({
+            'id': post.id,
+            'title': post.title,
+            'description': post.description,
+            'tags': post.tags,
+        })
+
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        tags = request.POST.get('tags', '').strip()
+
+        if not title or not description:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': False, 'error': 'Title and description are required.'})
+            return redirect('community')
+
+        post.title = title
+        post.description = description
+        post.tags = tags
+        post.save()
+
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': True})
+
+        messages.success(request, 'Post updated!')
+    return redirect('community')
+
+@login_required
+def delete_comment(request, comment_id):
+    # Only the comment's author can delete it
+    comment = get_object_or_404(Comment, id=comment_id, author=request.user)
+    if request.method == 'POST':
+        comment.delete()
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'success': True})
+    return redirect('community')
+
+
+# -- Donation Views --
+
+@login_required
+def donation_view(request):
+    # Show all donations by the logged-in user, newest first
+    donations = request.user.donations.all().order_by('-created_at')
+    # Get user addresses for the pickup form dropdown
+    addresses = request.user.addresses.all().order_by('-is_default', 'id')
+    return render(request, 'donation.html', {'donations': donations, 'addresses': addresses})
+
+@login_required
+def create_donation(request):
+    if request.method == 'POST':
+        donation_type = request.POST.get('donation_type')
+        clothing_type = request.POST.get('clothing_type', '').strip()
+        quantity = request.POST.get('quantity', 1)
+        condition = request.POST.get('condition', '').strip()
+        description = request.POST.get('description', '').strip()
+
+        if not clothing_type or not condition:
+            messages.error(request, 'Clothing type and condition are required.')
+            return redirect('donation')
+
+        donation = Donation(
+            user=request.user,
+            donation_type=donation_type,
+            clothing_type=clothing_type,
+            quantity=int(quantity),
+            condition=condition,
+            description=description,
+        )
+
+        # Attach image if uploaded
+        if 'image' in request.FILES:
+            donation.image = request.FILES['image']
+
+        # If pickup, grab the address and scheduling details
+        if donation_type == 'pickup':
+            donation.pickup_address = request.POST.get('pickup_address', '')
+            donation.pickup_date = request.POST.get('pickup_date') or None
+            donation.pickup_time_slot = request.POST.get('pickup_time_slot', '')
+
+        # Calculate coins based on condition and quantity before saving
+        donation.coins_earned = donation.calculate_coins()
+        donation.save()
+        messages.success(request, f'Donation submitted! You earned {donation.coins_earned} coins.')
+
+    return redirect('donation')
+
+@login_required
+def cancel_donation(request, donation_id):
+    donation = get_object_or_404(Donation, id=donation_id, user=request.user)
+    # Only allow cancelling if it's still pending
+    if donation.status == 'pending':
+        donation.delete()
+        messages.success(request, 'Donation cancelled.')
+    else:
+        messages.error(request, 'This donation can no longer be cancelled.')
+    return redirect('donation')
