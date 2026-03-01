@@ -8,50 +8,47 @@
     <!-- Header -->
     <div class="text-center max-w-2xl mx-auto mb-8 mt-4">
         <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-primary mb-3">Account Settings</h1>
-        <p class="text-base-content/70">Manage your profile details, track your upcycled orders, and update your
-            shipping addresses.</p>
     </div>
 
     <!-- MAIN CONTAINER -->
-    <div
-        class="w-full max-w-5xl mx-auto bg-base-100 rounded-box border border-base-300 shadow-xl flex flex-col md:flex-row min-h-[600px] overflow-hidden">
+    <div class="w-full max-w-5xl mx-auto flex flex-col md:flex-row min-h-[600px] overflow-hidden">
 
-        <!-- Sidebar Navigation -->
+        <!-- Tab Navigation — horizontal on mobile, vertical sidebar on desktop -->
         <div
-            class="w-full md:w-72 bg-base-200/30 border-b md:border-b-0 md:border-r border-base-200 p-6 flex flex-col gap-2">
+            class="w-full md:w-72 bg-base-200/30 border-b md:border-b-0 md:border-r border-base-200 p-3 md:p-6 flex flex-row md:flex-col gap-2 overflow-x-auto flex-shrink-0">
 
             <a href="#" id="tab-profile" onclick="switchTab('profile')"
-                class="settings-tab flex items-center gap-4 group p-3 rounded-xl bg-base-200 transition-all">
+                class="settings-tab flex items-center gap-3 md:gap-4 group p-2.5 md:p-3 rounded-xl bg-base-200 transition-all whitespace-nowrap flex-shrink-0">
                 <div
-                    class="icon-container w-10 h-10 rounded-lg bg-primary text-primary-content shadow-sm flex items-center justify-center transition-transform group-hover:scale-105">
-                    <i data-lucide="user" class="w-5 h-5"></i>
+                    class="icon-container w-8 h-8 md:w-10 md:h-10 rounded-lg bg-primary text-primary-content shadow-sm flex items-center justify-center transition-transform group-hover:scale-105">
+                    <i data-lucide="user" class="w-4 h-4 md:w-5 md:h-5"></i>
                 </div>
-                <span class="tab-text text-base text-base-content font-bold">Profile</span>
+                <span class="tab-text text-sm md:text-base text-base-content font-bold">Profile</span>
             </a>
 
             <a href="#" id="tab-orders" onclick="switchTab('orders')"
-                class="settings-tab flex items-center gap-4 group p-3 rounded-xl hover:bg-base-200/50 transition-all">
+                class="settings-tab flex items-center gap-3 md:gap-4 group p-2.5 md:p-3 rounded-xl hover:bg-base-200/50 transition-all whitespace-nowrap flex-shrink-0">
                 <div
-                    class="icon-container w-10 h-10 rounded-lg bg-base-100 border border-base-300 text-base-content/70 shadow-sm flex items-center justify-center transition-transform group-hover:scale-105">
-                    <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                    class="icon-container w-8 h-8 md:w-10 md:h-10 rounded-lg bg-base-100 border border-base-300 text-base-content/70 shadow-sm flex items-center justify-center transition-transform group-hover:scale-105">
+                    <i data-lucide="shopping-bag" class="w-4 h-4 md:w-5 md:h-5"></i>
                 </div>
                 <span
-                    class="tab-text text-base text-base-content/70 font-medium group-hover:text-base-content transition-colors">Orders</span>
+                    class="tab-text text-sm md:text-base text-base-content/70 font-medium group-hover:text-base-content transition-colors">Orders</span>
             </a>
 
             <a href="#" id="tab-address" onclick="switchTab('address')"
-                class="settings-tab flex items-center gap-4 group p-3 rounded-xl hover:bg-base-200/50 transition-all">
+                class="settings-tab flex items-center gap-3 md:gap-4 group p-2.5 md:p-3 rounded-xl hover:bg-base-200/50 transition-all whitespace-nowrap flex-shrink-0">
                 <div
-                    class="icon-container w-10 h-10 rounded-lg bg-base-100 border border-base-300 text-base-content/70 shadow-sm flex items-center justify-center transition-transform group-hover:scale-105">
-                    <i data-lucide="map-pin" class="w-5 h-5"></i>
+                    class="icon-container w-8 h-8 md:w-10 md:h-10 rounded-lg bg-base-100 border border-base-300 text-base-content/70 shadow-sm flex items-center justify-center transition-transform group-hover:scale-105">
+                    <i data-lucide="map-pin" class="w-4 h-4 md:w-5 md:h-5"></i>
                 </div>
                 <span
-                    class="tab-text text-base text-base-content/70 font-medium group-hover:text-base-content transition-colors">Address</span>
+                    class="tab-text text-sm md:text-base text-base-content/70 font-medium group-hover:text-base-content transition-colors">Address</span>
             </a>
         </div>
 
         <!-- Main Content Area -->
-        <div class="flex-1 p-6 md:p-10 overflow-y-auto hidden-scrollbar">
+        <div class="flex-1 p-4 md:p-10 overflow-y-auto hidden-scrollbar">
 
 
 

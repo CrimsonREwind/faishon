@@ -8,7 +8,6 @@
     <!-- Page Header -->
     <div class="text-center max-w-2xl mx-auto mb-8 mt-4 flex-shrink-0">
         <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-primary mb-3">Community Feed</h1>
-        <p class="text-base-content/70">See what the community is upcycling and share your own projects.</p>
     </div>
 
     <!-- Feed grid: centred, max-width column -->
@@ -102,9 +101,9 @@
                 {% if post.tags %}
                 <div class="flex flex-wrap gap-1.5 mt-3">
                     {% for tag in post.get_tags_list %}
-                    <span class="badge badge-outline badge-sm text-primary border-primary/40 font-medium">#{{ tag
-                        }}</span>
+                    <span class="badge badge-outline badge-sm text-primary border-primary/40 font-medium">#{{ tag }}</span>
                     {% endfor %}
+
                 </div>
                 {% endif %}
             </div>
@@ -153,15 +152,31 @@
                         <span class="text-xs text-base-content/40 ml-1.5">{{ comment.created_at|timesince }} ago</span>
                         <p class="text-sm text-base-content/70 mt-0.5">{{ comment.body }}</p>
                     </div>
-                    <!-- Delete comment -- only visible to comment author -->
-                    {% if comment.author == request.user %}
-                    <button
-                        class="btn btn-ghost btn-xs text-error hover:bg-error/10 rounded-lg self-start mt-0.5 delete-comment-btn"
-                        data-comment-id="{{ comment.id }}" data-url="{% url 'delete_comment' comment.id %}"
-                        data-csrf="{{ csrf_token }}">
-                        <i data-lucide="x" class="w-3 h-3 text-error"></i>
-                    </button>
-                    {% endif %}
+                    <!-- Three-dot menu for comment actions -->
+                    <div class="dropdown dropdown-end self-start mt-0.5">
+                        <button tabindex="0"
+                            class="btn btn-ghost btn-xs btn-circle text-base-content/30 hover:text-base-content hover:bg-base-200">
+                            <i data-lucide="more-vertical" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <div tabindex="0"
+                            class="dropdown-content z-20 p-1.5 shadow-xl bg-base-100 border border-base-300 rounded-box w-36 mt-1 flex flex-col gap-0.5">
+                            <button
+                                class="copy-comment-btn flex items-center gap-2 text-xs font-medium text-base-content rounded-lg px-3 py-2 hover:bg-base-200 w-full text-left transition-colors"
+                                data-comment-body="{{ comment.body|escapejs }}">
+                                <i data-lucide="copy" class="w-3.5 h-3.5 text-base-content/60"></i>
+                                Copy
+                            </button>
+                            {% if comment.author == request.user %}
+                            <button
+                                class="delete-comment-btn flex items-center gap-2 text-xs font-medium text-error rounded-lg px-3 py-2 hover:bg-error/10 w-full text-left transition-colors"
+                                data-comment-id="{{ comment.id }}" data-url="{% url 'delete_comment' comment.id %}"
+                                data-csrf="{{ csrf_token }}">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                Delete
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
                 {% endfor %}
 
@@ -447,12 +462,25 @@
                     <span class="text-xs text-base-content/40 ml-1.5">just now</span>
                     <p class="text-sm text-base-content/70 mt-0.5">${c.body}</p>
                 </div>
-                <button class="btn btn-ghost btn-xs text-error hover:bg-error/10 rounded-lg self-start mt-0.5 delete-comment-btn"
-                    data-comment-id="${c.id}"
-                    data-url="${c.delete_url}"
-                    data-csrf="${form.dataset.csrf}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>`;
+                <div class="dropdown dropdown-end self-start mt-0.5">
+                    <button tabindex="0" class="btn btn-ghost btn-xs btn-circle text-base-content/30 hover:text-base-content hover:bg-base-200">
+                        <i data-lucide="more-vertical" class="w-3.5 h-3.5"></i>
+                    </button>
+                    <div tabindex="0" class="dropdown-content z-20 p-1.5 shadow-xl bg-base-100 border border-base-300 rounded-box w-36 mt-1 flex flex-col gap-0.5">
+                        <button class="copy-comment-btn flex items-center gap-2 text-xs font-medium text-base-content rounded-lg px-3 py-2 hover:bg-base-200 w-full text-left transition-colors"
+                            data-comment-body="${c.body.replace(/"/g, '&quot;')}">
+                            <i data-lucide="copy" class="w-3.5 h-3.5 text-base-content/60"></i>
+                            Copy
+                        </button>
+                        <button class="delete-comment-btn flex items-center gap-2 text-xs font-medium text-error rounded-lg px-3 py-2 hover:bg-error/10 w-full text-left transition-colors"
+                            data-comment-id="${c.id}"
+                            data-url="${c.delete_url}"
+                            data-csrf="${form.dataset.csrf}">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            Delete
+                        </button>
+                    </div>
+                </div>`;
 
                 form.parentNode.insertBefore(newComment, form);
 
@@ -551,6 +579,20 @@
                 const countEl = postCard.querySelector('[class*="comment-count-"]');
                 if (countEl) countEl.textContent = Math.max(0, parseInt(countEl.textContent) - 1);
             }
+        });
+
+        // ── COPY COMMENT (delegated) ─────────────────────────
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.copy-comment-btn');
+            if (!btn) return;
+            const text = btn.dataset.commentBody;
+            navigator.clipboard.writeText(text).then(() => {
+                // Brief visual feedback
+                const original = btn.innerHTML;
+                btn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 text-success"></i> Copied!';
+                if (window.lucide) window.lucide.createIcons();
+                setTimeout(() => { btn.innerHTML = original; if (window.lucide) window.lucide.createIcons(); }, 1500);
+            });
         });
 
     });
